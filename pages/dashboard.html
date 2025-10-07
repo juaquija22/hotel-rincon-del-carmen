@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Cuenta - Hotel el Rincón del Carmen</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>Hotel el Rincón del Carmen</h2>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="../index.html" class="nav-link">Inicio</a>
+                <a href="availability.html" class="nav-link">Reservas</a>
+                <a href="contact.html" class="nav-link">Contacto</a>
+                <a href="#" class="nav-link" id="login-btn">Iniciar Sesión</a>
+                <a href="#" class="nav-link" id="register-btn">Registrarse</a>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="dashboard-sidebar">
+            <h3>Mi Cuenta</h3>
+            <ul class="sidebar-nav">
+                <li><a href="#" class="nav-link active" data-section="profile">Mi Perfil</a></li>
+                <li><a href="#" class="nav-link" data-section="reservations">Mis Reservas</a></li>
+            </ul>
+            <div class="logout-section">
+                <button id="dashboard-logout-btn" class="btn btn-danger logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="dashboard-main">
+            <!-- Profile Section -->
+            <div id="profile-section" class="dashboard-section active">
+                <div class="dashboard-header">
+                    <h1>Mi Perfil</h1>
+                    <p>Gestiona tu información personal</p>
+                </div>
+
+                <div class="profile-info" id="profile-info">
+                    <!-- Profile info will be loaded here -->
+                </div>
+
+                <div class="edit-form" id="edit-form" style="display: none;">
+                    <h3>Editar Perfil</h3>
+                    <form id="profile-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="edit-name">Nombre Completo:</label>
+                                <input type="text" id="edit-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-email">Email:</label>
+                                <input type="email" id="edit-email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="edit-phone">Teléfono:</label>
+                                <input type="tel" id="edit-phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-nationality">Nacionalidad:</label>
+                                <input type="text" id="edit-nationality" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="cancelEdit()">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Reservations Section -->
+            <div id="reservations-section" class="dashboard-section">
+                <div class="dashboard-header">
+                    <h1>Mis Reservas</h1>
+                    <p>Gestiona tus reservas y reservaciones</p>
+                </div>
+
+                <div class="reservations-grid" id="reservations-grid">
+                    <!-- Reservations will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modals (inherited from main CSS) -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Iniciar Sesión</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email:</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Contraseña:</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+            </form>
+            <p>¿No tienes cuenta? <a href="#" id="show-register">Regístrate aquí</a></p>
+        </div>
+    </div>
+
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Registrarse</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-id">Número de Identificación:</label>
+                    <input type="text" id="register-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-name">Nombre Completo:</label>
+                    <input type="text" id="register-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-nationality">Nacionalidad:</label>
+                    <input type="text" id="register-nationality" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email:</label>
+                    <input type="email" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-phone">Teléfono:</label>
+                    <input type="tel" id="register-phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Contraseña:</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrarse</button>
+            </form>
+            <p>¿Ya tienes cuenta? <a href="#" id="show-login">Inicia sesión aquí</a></p>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/booking.js"></script>
+    <script>
+        // Dashboard functionality
+        class UserDashboard {
+            constructor() {
+                this.currentUser = null;
+                this.setupEventListeners();
+                this.checkAuth();
+            }
+
+            setupEventListeners() {
+                // Navigation
+                document.querySelectorAll('.sidebar-nav a').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.showSection(link.dataset.section);
+                    });
+                });
+
+                // Profile form
+                const profileForm = document.getElementById('profile-form');
+                if (profileForm) {
+                    profileForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.updateProfile();
+                    });
+                }
+
+                // Password form
+                const passwordForm = document.getElementById('password-form');
+                if (passwordForm) {
+                    passwordForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.changePassword();
+                    });
+                }
+            }
+
+            checkAuth() {
+                const savedUser = localStorage.getItem('current_user');
+                if (savedUser) {
+                    try {
+                        this.currentUser = JSON.parse(savedUser);
+                        if (this.currentUser && this.currentUser.id) {
+                            this.loadProfile();
+                            this.loadReservations();
+                        } else {
+                            this.showAccessDenied();
+                        }
+                    } catch (error) {
+                        console.error('Error parsing user data:', error);
+                        this.showAccessDenied();
+                    }
+                } else {
+                    this.showAccessDenied();
+                }
+            }
+
+            showAccessDenied() {
+                document.querySelector('.dashboard-main').innerHTML = `
+                    <div class="access-denied">
+                        <i class="fas fa-lock"></i>
+                        <h2>Acceso Denegado</h2>
+                        <p>Debes iniciar sesión para acceder a tu cuenta.</p>
+                        <a href="../index.html" class="btn btn-primary">Volver al Inicio</a>
+                    </div>
+                `;
+            }
+
+            showSection(sectionName) {
+                // Hide all sections
+                document.querySelectorAll('.dashboard-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+
+                // Show selected section
+                const targetSection = document.getElementById(`${sectionName}-section`);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                }
+
+                // Update navigation
+                document.querySelectorAll('.sidebar-nav a').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
+
+                // Load section data
+                if (sectionName === 'reservations') {
+                    this.loadReservations();
+                }
+            }
+
+            loadProfile() {
+                if (!this.currentUser) return;
+
+                const profileInfo = document.getElementById('profile-info');
+                profileInfo.innerHTML = `
+                    <div class="info-card">
+                        <h4>Información Personal</h4>
+                        <div class="info-item">
+                            <span class="info-label">Nombre:</span>
+                            <span class="info-value">${this.currentUser.name}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value">${this.currentUser.email}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Teléfono:</span>
+                            <span class="info-value">${this.currentUser.phone}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Nacionalidad:</span>
+                            <span class="info-value">${this.currentUser.nationality}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">ID:</span>
+                            <span class="info-value">${this.currentUser.idNumber}</span>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <h4>Estadísticas</h4>
+                        <div class="info-item">
+                            <span class="info-label">Reservas Totales:</span>
+                            <span class="info-value">${this.getUserReservations().length}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Reservas Activas:</span>
+                            <span class="info-value">${this.getUserReservations().filter(r => r.status === 'confirmed').length}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Miembro desde:</span>
+                            <span class="info-value">${this.formatDate(this.currentUser.createdAt || new Date().toISOString())}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            loadReservations() {
+                const reservations = this.getUserReservations();
+                const reservationsGrid = document.getElementById('reservations-grid');
+
+                if (reservations.length === 0) {
+                    reservationsGrid.innerHTML = `
+                        <div class="no-reservations">
+                            <i class="fas fa-calendar-times"></i>
+                            <h3>No tienes reservas</h3>
+                            <p>¡Haz tu primera reserva y disfruta de una estadía inolvidable!</p>
+                            <a href="availability.html" class="btn btn-primary">Hacer Reserva</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                reservationsGrid.innerHTML = reservations.map(reservation => {
+                    const room = window.hotelApp.rooms.find(r => r.id === reservation.roomId);
+                    const statusClass = reservation.status === 'confirmed' ? 'status-confirmed' : 
+                                       reservation.status === 'cancelled' ? 'status-cancelled' : 'status-pending';
+                    
+                    const statusText = reservation.status === 'confirmed' ? 'Confirmada' : 
+                                      reservation.status === 'cancelled' ? 'Cancelada' : 'Pendiente';
+
+                    return `
+                        <div class="reservation-card">
+                            <div class="reservation-header">
+                                <h3>Reserva #${reservation.id}</h3>
+                                <span class="status-badge ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="reservation-details">
+                                <div class="detail-row">
+                                    <span class="label">Habitación:</span>
+                                    <span class="value">${room ? room.name : 'N/A'}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="label">Fechas:</span>
+                                    <span class="value">${this.formatDate(reservation.checkIn)} - ${this.formatDate(reservation.checkOut)}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="label">Huéspedes:</span>
+                                    <span class="value">${reservation.guests} persona${reservation.guests > 1 ? 's' : ''}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="label">Total:</span>
+                                    <span class="value">$${reservation.totalPrice.toLocaleString()}</span>
+                                </div>
+                                ${reservation.notes ? `
+                                    <div class="detail-row">
+                                        <span class="label">Notas:</span>
+                                        <span class="value">${reservation.notes}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="reservation-actions">
+                                ${reservation.status === 'confirmed' ? `
+                                    <button class="btn btn-secondary" onclick="window.userDashboard.modifyReservation(${reservation.id})">Modificar</button>
+                                    <button class="btn btn-danger" onclick="window.userDashboard.cancelReservation(${reservation.id})">Cancelar</button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            getUserReservations() {
+                if (!this.currentUser) return [];
+                return window.hotelApp.reservations.filter(r => r.userId === this.currentUser.id);
+            }
+
+            updateProfile() {
+                const formData = {
+                    name: document.getElementById('edit-name').value,
+                    email: document.getElementById('edit-email').value,
+                    phone: document.getElementById('edit-phone').value,
+                    nationality: document.getElementById('edit-nationality').value
+                };
+
+                // Update in localStorage
+                const users = JSON.parse(localStorage.getItem('hotel_users') || '[]');
+                const userIndex = users.findIndex(u => u.id === this.currentUser.id);
+                
+                if (userIndex !== -1) {
+                    users[userIndex] = { ...users[userIndex], ...formData };
+                    localStorage.setItem('hotel_users', JSON.stringify(users));
+                    
+                    // Update current user
+                    this.currentUser = { ...this.currentUser, ...formData };
+                    localStorage.setItem('current_user', JSON.stringify(this.currentUser));
+                    
+                    window.hotelApp.showMessage('Perfil actualizado exitosamente', 'success');
+                    this.loadProfile();
+                    this.hideEditForm();
+                }
+            }
+
+            cancelReservation(reservationId) {
+                if (confirm('¿Estás seguro de que quieres cancelar esta reserva?')) {
+                    const result = window.hotelApp.bookingManager.cancelReservation(reservationId);
+                    
+                    if (result.success) {
+                        window.hotelApp.showMessage(result.message, 'success');
+                        this.loadReservations();
+                    } else {
+                        window.hotelApp.showMessage(result.message, 'error');
+                    }
+                }
+            }
+
+            modifyReservation(reservationId) {
+                // This would open a modal to modify the reservation
+                window.hotelApp.showMessage('Función de modificación en desarrollo', 'info');
+            }
+
+            showEditForm() {
+                document.getElementById('edit-form').style.display = 'block';
+                
+                // Populate form with current data
+                document.getElementById('edit-name').value = this.currentUser.name;
+                document.getElementById('edit-email').value = this.currentUser.email;
+                document.getElementById('edit-phone').value = this.currentUser.phone;
+                document.getElementById('edit-nationality').value = this.currentUser.nationality;
+            }
+
+            hideEditForm() {
+                document.getElementById('edit-form').style.display = 'none';
+            }
+
+            formatDate(dateString) {
+                return new Date(dateString).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
+        }
+
+        // Global functions
+        window.cancelEdit = function() {
+            window.userDashboard.hideEditForm();
+        };
+
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.hotelApp) {
+                window.userDashboard = new UserDashboard();
+            }
+            
+            // Add logout button event listener
+            const logoutBtn = document.getElementById('dashboard-logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                        if (window.hotelApp) {
+                            window.hotelApp.logout();
+                            // Redirect to home page after logout
+                            setTimeout(() => {
+                                window.location.href = '../index.html';
+                            }, 1000);
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
+

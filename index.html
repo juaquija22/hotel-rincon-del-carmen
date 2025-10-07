@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel el Rincón del Carmen - Tu Refugio de Paz</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>Hotel el Rincón del Carmen</h2>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="index.html" class="nav-link active">Inicio</a>
+                <a href="pages/availability.html" class="nav-link">Reservas</a>
+                <a href="pages/contact.html" class="nav-link">Contacto</a>
+                <a href="#" class="nav-link" id="login-btn">Iniciar Sesión</a>
+                <a href="#" class="nav-link" id="register-btn">Registrarse</a>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Bienvenido a tu Refugio de Paz</h1>
+            <p class="hero-subtitle">Descubre la magia del Hotel el Rincón del Carmen, donde la tranquilidad y el lujo se encuentran</p>
+            <div class="hero-buttons">
+                <a href="pages/availability.html" class="btn btn-primary">Reservar Ahora</a>
+                <a href="#rooms" class="btn btn-secondary">Ver Habitaciones</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="images/bienvenido-a-hotel-playa.jpg" alt="Hotel el Rincón del Carmen">
+        </div>
+    </section>
+
+    <!-- Rooms Carousel -->
+    <section id="rooms" class="rooms-section">
+        <div class="container">
+            <h2 class="section-title">Nuestras Habitaciones</h2>
+            <p class="section-subtitle">Espacios diseñados para tu máximo confort y relajación</p>
+            
+            <div class="rooms-carousel-css">
+                <!-- Radio buttons ocultos para controlar el carrusel -->
+                <input type="radio" name="carousel" id="slide1" checked>
+                <input type="radio" name="carousel" id="slide2">
+                <input type="radio" name="carousel" id="slide3">
+                <input type="radio" name="carousel" id="slide4">
+                <input type="radio" name="carousel" id="slide5">
+                <input type="radio" name="carousel" id="slide6">
+                
+                <!-- Habitaciones -->
+                <div class="carousel-slides">
+                    <!-- Habitación 1: Deluxe -->
+                    <div class="room-card">
+                        <div class="room-image">
+                            <img src="images/suit1.jpg" alt="Habitación Deluxe">
+                        </div>
+                        <div class="room-content">
+                            <h3 class="room-title">Habitación Deluxe</h3>
+                            <div class="room-price">$250.000 / noche</div>
+                            <p>Amplia habitación con vista al jardín</p>
+                            <ul class="room-features">
+                                <li><i class="fas fa-check"></i>WiFi gratuito</li>
+                                <li><i class="fas fa-check"></i>Minibar</li>
+                                <li><i class="fas fa-check"></i>TV 55"</li>
+                                <li><i class="fas fa-check"></i>Aire acondicionado</li>
+                                <li><i class="fas fa-check"></i>Baño privado</li>
+                            </ul>
+                            <div class="room-info">
+                                <small><i class="fas fa-bed"></i> 1 cama</small>
+                                <small><i class="fas fa-users"></i> Hasta 2 personas</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Habitación 2: Suite Ejecutiva -->
+                    <div class="room-card">
+                        <div class="room-image">
+                            <img src="images/suit2.jpg" alt="Suite Ejecutiva">
+                        </div>
+                        <div class="room-content">
+                            <h3 class="room-title">Suite Ejecutiva</h3>
+                            <div class="room-price">$450.000 / noche</div>
+                            <p>Suite de lujo con sala de estar separada</p>
+                            <ul class="room-features">
+                                <li><i class="fas fa-check"></i>WiFi gratuito</li>
+                                <li><i class="fas fa-check"></i>Minibar</li>
+                                <li><i class="fas fa-check"></i>TV 65"</li>
+                                <li><i class="fas fa-check"></i>Jacuzzi</li>
+                                <li><i class="fas fa-check"></i>Sala de estar</li>
+                                <li><i class="fas fa-check"></i>Vista panorámica</li>
+                            </ul>
+                            <div class="room-info">
+                                <small><i class="fas fa-bed"></i> 2 camas</small>
+                                <small><i class="fas fa-users"></i> Hasta 4 personas</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Habitación 3: Familiar -->
+                    <div class="room-card">
+                        <div class="room-image">
+                            <img src="images/suit3.jpg" alt="Habitación Familiar">
+                        </div>
+                        <div class="room-content">
+                            <h3 class="room-title">Habitación Familiar</h3>
+                            <div class="room-price">$350.000 / noche</div>
+                            <p>Perfecta para familias con niños</p>
+                            <ul class="room-features">
+                                <li><i class="fas fa-check"></i>WiFi gratuito</li>
+                                <li><i class="fas fa-check"></i>Minibar</li>
+                                <li><i class="fas fa-check"></i>TV 50"</li>
+                                <li><i class="fas fa-check"></i>Aire acondicionado</li>
+                                <li><i class="fas fa-check"></i>Cuna disponible</li>
+                                <li><i class="fas fa-check"></i>Área de juegos</li>
+                            </ul>
+                            <div class="room-info">
+                                <small><i class="fas fa-bed"></i> 3 camas</small>
+                                <small><i class="fas fa-users"></i> Hasta 6 personas</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Habitación 4: Estándar -->
+                    <div class="room-card">
+                        <div class="room-image">
+                            <img src="images/suit4.jpg" alt="Habitación Estándar">
+                        </div>
+                        <div class="room-content">
+                            <h3 class="room-title">Habitación Estándar</h3>
+                            <div class="room-price">$180.000 / noche</div>
+                            <p>Cómoda habitación con todas las comodidades</p>
+                            <ul class="room-features">
+                                <li><i class="fas fa-check"></i>WiFi gratuito</li>
+                                <li><i class="fas fa-check"></i>TV 43"</li>
+                                <li><i class="fas fa-check"></i>Aire acondicionado</li>
+                                <li><i class="fas fa-check"></i>Baño privado</li>
+                                <li><i class="fas fa-check"></i>Vista al jardín</li>
+                            </ul>
+                            <div class="room-info">
+                                <small><i class="fas fa-bed"></i> 1 cama</small>
+                                <small><i class="fas fa-users"></i> Hasta 2 personas</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Habitación 5: Presidencial -->
+                    <div class="room-card">
+                        <div class="room-image">
+                            <img src="images/suit5.jpg" alt="Suite Presidencial">
+                        </div>
+                        <div class="room-content">
+                            <h3 class="room-title">Suite Presidencial</h3>
+                            <div class="room-price">$750.000 / noche</div>
+                            <p>La máxima expresión de lujo y comodidad</p>
+                            <ul class="room-features">
+                                <li><i class="fas fa-check"></i>WiFi gratuito</li>
+                                <li><i class="fas fa-check"></i>Minibar premium</li>
+                                <li><i class="fas fa-check"></i>TV 75"</li>
+                                <li><i class="fas fa-check"></i>Jacuzzi privado</li>
+                                <li><i class="fas fa-check"></i>Terraza privada</li>
+                                <li><i class="fas fa-check"></i>Servicio de mayordomo</li>
+                                <li><i class="fas fa-check"></i>Vista panorámica</li>
+                            </ul>
+                            <div class="room-info">
+                                <small><i class="fas fa-bed"></i> 1 cama</small>
+                                <small><i class="fas fa-users"></i> Hasta 4 personas</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Habitación 6: Superior -->
+                    <div class="room-card">
+                        <div class="room-image">
+                            <img src="images/suit6.jpg" alt="Habitación Superior">
+                        </div>
+                        <div class="room-content">
+                            <h3 class="room-title">Habitación Superior</h3>
+                            <div class="room-price">$320.000 / noche</div>
+                            <p>Elegante habitación con acabados de lujo</p>
+                            <ul class="room-features">
+                                <li><i class="fas fa-check"></i>WiFi gratuito</li>
+                                <li><i class="fas fa-check"></i>Minibar</li>
+                                <li><i class="fas fa-check"></i>TV 50"</li>
+                                <li><i class="fas fa-check"></i>Aire acondicionado</li>
+                                <li><i class="fas fa-check"></i>Baño privado</li>
+                                <li><i class="fas fa-check"></i>Balcón privado</li>
+                            </ul>
+                            <div class="room-info">
+                                <small><i class="fas fa-bed"></i> 2 camas</small>
+                                <small><i class="fas fa-users"></i> Hasta 3 personas</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Controles de navegación -->
+                <div class="carousel-nav">
+                    <label for="slide1" class="nav-btn"></label>
+                    <label for="slide2" class="nav-btn"></label>
+                    <label for="slide3" class="nav-btn"></label>
+                    <label for="slide4" class="nav-btn"></label>
+                    <label for="slide5" class="nav-btn"></label>
+                    <label for="slide6" class="nav-btn"></label>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hotel Areas -->
+    <section class="areas-section">
+        <div class="container">
+            <h2 class="section-title">Nuestras Instalaciones</h2>
+            <p class="section-subtitle">Descubre todos los espacios que tenemos para ti</p>
+            
+            <div class="areas-grid">
+                <div class="area-card">
+                    <div class="area-image">
+                        <img src="images/restaurante.jpg" alt="Restaurante">
+                    </div>
+                    <div class="area-content">
+                        <h3>Restaurante</h3>
+                        <p>Disfruta de nuestra gastronomía local e internacional en un ambiente elegante y acogedor.</p>
+                    </div>
+                </div>
+                
+                <div class="area-card">
+                    <div class="area-image">
+                        <img src="images/spa.webp" alt="Spa & Bienestar">
+                    </div>
+                    <div class="area-content">
+                        <h3>Spa & Bienestar</h3>
+                        <p>Relájate y renueva tu energía con nuestros tratamientos de spa de clase mundial.</p>
+                    </div>
+                </div>
+                
+                <div class="area-card">
+                    <div class="area-image">
+                        <img src="images/piscina.jpg" alt="Piscina">
+                    </div>
+                    <div class="area-content">
+                        <h3>Zonas Húmedas</h3>
+                        <p>Refréscate en nuestras piscinas y disfruta de las áreas húmedas con vista panorámica.</p>
+                    </div>
+                </div>
+                
+                <div class="area-card">
+                    <div class="area-image">
+                        <img src="images/gimnasio.jpg" alt="Gimnasio">
+                    </div>
+                    <div class="area-content">
+                        <h3>Gimnasio</h3>
+                        <p>Mantén tu rutina de ejercicios en nuestro gimnasio completamente equipado.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Showcase -->
+    <section class="services-section">
+        <div class="container">
+            <h2 class="section-title">Nuestros Servicios</h2>
+            <p class="section-subtitle">Todo lo que necesitas para una estadía perfecta</p>
+            
+            <div class="services-grid">
+                <div class="service-item">
+                    <div class="service-icon">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <h3>WiFi Gratuito</h3>
+                    <p>Internet de alta velocidad en todas las áreas del hotel</p>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <h3>Estacionamiento</h3>
+                    <p>Parqueadero seguro y gratuito para todos nuestros huéspedes</p>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-icon">
+                        <i class="fas fa-concierge-bell"></i>
+                    </div>
+                    <h3>Servicio 24/7</h3>
+                    <p>Nuestro equipo está disponible las 24 horas para asistirte</p>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3>Room Service</h3>
+                    <p>Servicio a la habitación disponible durante todo el día</p>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-icon">
+                        <i class="fas fa-plane"></i>
+                    </div>
+                    <h3>Traslados</h3>
+                    <p>Servicio de traslado al aeropuerto y principales destinos</p>
+                </div>
+                
+                <div class="service-item">
+                    <div class="service-icon">
+                        <i class="fas fa-baby"></i>
+                    </div>
+                    <h3>Servicios Familiares</h3>
+                    <p>Actividades y servicios especiales para toda la familia</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>¿Listo para tu próxima escapada?</h2>
+                <p>Reserva ahora y disfruta de una experiencia inolvidable en el Hotel el Rincón del Carmen</p>
+                <a href="pages/availability.html" class="btn btn-primary btn-large">Reservar Mi Habitación</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Hotel el Rincón del Carmen</h3>
+                    <p>Tu refugio de paz y tranquilidad en el corazón de la ciudad.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Enlaces Rápidos</h4>
+                    <ul>
+                        <li><a href="index.html">Inicio</a></li>
+                        <li><a href="pages/availability.html">Reservas</a></li>
+                        <li><a href="pages/contact.html">Contacto</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contacto</h4>
+                    <p><i class="fas fa-phone"></i> +57 316 6365 224</p>
+                    <p><i class="fas fa-envelope"></i> juaquija22@gmail.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Bucaramanga</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Hotel el Rincón del Carmen. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modals -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Iniciar Sesión</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email:</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Contraseña:</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+            </form>
+            <p>¿No tienes cuenta? <a href="#" id="show-register">Regístrate aquí</a></p>
+        </div>
+    </div>
+
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Registrarse</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-id">Número de Identificación:</label>
+                    <input type="text" id="register-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-name">Nombre Completo:</label>
+                    <input type="text" id="register-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-nationality">Nacionalidad:</label>
+                    <input type="text" id="register-nationality" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email:</label>
+                    <input type="email" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-phone">Teléfono:</label>
+                    <input type="tel" id="register-phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Contraseña:</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrarse</button>
+            </form>
+            <p>¿Ya tienes cuenta? <a href="#" id="show-login">Inicia sesión aquí</a></p>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/booking.js"></script>
+</body>
+</html>
