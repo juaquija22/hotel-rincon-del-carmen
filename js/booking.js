@@ -132,7 +132,13 @@ class BookingManager {
             return;
         }
 
-        this.showLoading();
+        const loading = document.getElementById('loading');
+        const resultsSection = document.getElementById('results-section');
+        const noResults = document.getElementById('no-results');
+        
+        if (loading) loading.style.display = 'block';
+        if (resultsSection) resultsSection.style.display = 'none';
+        if (noResults) noResults.style.display = 'none';
         
         setTimeout(() => {
             const availableRooms = this.hotelApp.getAvailableRooms(
@@ -144,15 +150,6 @@ class BookingManager {
         }, 500);
     }
 
-    showLoading() {
-        const loading = document.getElementById('loading');
-        const resultsSection = document.getElementById('results-section');
-        const noResults = document.getElementById('no-results');
-        
-        if (loading) loading.style.display = 'block';
-        if (resultsSection) resultsSection.style.display = 'none';
-        if (noResults) noResults.style.display = 'none';
-    }
 
     displayResults(rooms) {
         const elements = {
@@ -188,16 +185,13 @@ class BookingManager {
         if (elements.noResults) elements.noResults.style.display = 'none';
         if (elements.resultsSection) elements.resultsSection.style.display = 'block';
         
-        this.updateResultsCount(rooms.length);
+        const resultsCount = document.getElementById('results-count');
+        if (resultsCount) {
+            resultsCount.textContent = `${rooms.length} habitación${rooms.length !== 1 ? 'es' : ''} encontrada${rooms.length !== 1 ? 's' : ''}`;
+        }
         this.renderRooms(rooms);
     }
 
-    updateResultsCount(count) {
-        const resultsCount = document.getElementById('results-count');
-        if (resultsCount) {
-            resultsCount.textContent = `${count} habitación${count !== 1 ? 'es' : ''} encontrada${count !== 1 ? 's' : ''}`;
-        }
-    }
 
     renderRooms(rooms) {
         const roomsGrid = document.getElementById('rooms-grid');
@@ -423,14 +417,8 @@ class BookingManager {
                     </div>
                 </div>`;
         }).join('');
-        
-        this.setupReservationActionButtons();
     }
 
-    setupReservationActionButtons() {
-        // No action buttons needed for regular users
-        // All reservation management is now handled by admin panel
-    }
 
     // Reservation modification methods removed - only admin can modify reservations
 

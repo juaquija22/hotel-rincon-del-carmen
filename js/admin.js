@@ -116,7 +116,7 @@ class AdminPanel {
                     <div class="reservation-info">
                         <h4>Reserva #${reservation.id}</h4>
                         <p>${room?.name || 'N/A'} - ${user?.name || 'Usuario no encontrado'}</p>
-                        <small>${this.formatDate(reservation.createdAt)}</small>
+                        <small>${new Date(reservation.createdAt).toLocaleDateString('es-ES', {year: 'numeric', month: 'long', day: 'numeric'})}</small>
                     </div>
                     <div class="reservation-status">
                         <span class="status-badge ${statusClass}">${statusText}</span>
@@ -176,7 +176,7 @@ class AdminPanel {
                         </div>
                         <div class="detail-row">
                             <span class="label">Fechas:</span>
-                            <span class="value">${this.formatDate(reservation.checkIn)} - ${this.formatDate(reservation.checkOut)}</span>
+                            <span class="value">${new Date(reservation.checkIn).toLocaleDateString('es-ES', {year: 'numeric', month: 'long', day: 'numeric'})} - ${new Date(reservation.checkOut).toLocaleDateString('es-ES', {year: 'numeric', month: 'long', day: 'numeric'})}</span>
                         </div>
                         <div class="detail-row">
                             <span class="label">Huéspedes:</span>
@@ -286,7 +286,7 @@ class AdminPanel {
                     </div>
                     <div class="detail-row">
                         <span class="label">Registrado:</span>
-                        <span class="value">${this.formatDate(user.createdAt)}</span>
+                        <span class="value">${new Date(user.createdAt).toLocaleDateString('es-ES', {year: 'numeric', month: 'long', day: 'numeric'})}</span>
                     </div>
                 </div>
                 <div class="user-actions">
@@ -362,14 +362,6 @@ class AdminPanel {
             this.loadUsers();
             this.loadOverview();
         }
-    }
-
-    formatDate(dateString) {
-        return new Date(dateString).toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
     }
 }
 

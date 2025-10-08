@@ -104,27 +104,6 @@ class HotelApp {
                 });
             });
 
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const href = anchor.getAttribute('href');
-                    if (href && href !== '#') {
-                        const target = document.querySelector(href);
-                        if (target) {
-                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                    }
-                });
-            });
-
-            window.addEventListener('scroll', () => {
-                const navbar = document.querySelector('.navbar');
-                if (navbar) {
-                    navbar.style.backgroundColor = window.scrollY > 100 ? 'rgba(255, 255, 255, 0.95)' : '#fff';
-                    navbar.style.backdropFilter = window.scrollY > 100 ? 'blur(10px)' : 'none';
-                }
-            });
-
             this.setupModalEvents();
             this.setupAuthButtons();
         };
@@ -206,7 +185,10 @@ class HotelApp {
                 registerBtn.href = '#';
             }
             this.removeLogoutButton();
-            this.removeAdminLink();
+            const adminLink = document.getElementById('admin-link');
+            if (adminLink) {
+                adminLink.remove();
+            }
         }
 
         if (window.bookingManager && window.bookingManager.updateSearchLoginNotice) {
@@ -260,12 +242,6 @@ class HotelApp {
         });
     }
 
-    removeAdminLink() {
-        const adminLink = document.getElementById('admin-link');
-        if (adminLink) {
-            adminLink.remove();
-        }
-    }
 
     showModal(modalId) {
         const modal = document.getElementById(modalId);
