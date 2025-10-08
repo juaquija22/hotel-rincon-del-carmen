@@ -32,8 +32,6 @@ class BookingManager {
 
             this.setMinimumDates();
             this.setupTabs();
-            this.setupModifyModalEvents();
-            this.setupModifyModalFormEvents();
         };
         
         if (document.readyState === 'loading') {
@@ -43,19 +41,7 @@ class BookingManager {
         }
     }
 
-    setupModifyModalFormEvents() {
-        const cancelBtn = document.getElementById('cancel-modify-btn');
-        const modifyForm = document.getElementById('modify-form');
-        
-        if (cancelBtn) cancelBtn.addEventListener('click', () => this.hotelApp.hideModals());
-
-        if (modifyForm) {
-            modifyForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleModifyReservation();
-            });
-        }
-    }
+    // Modify modal form events removed - only admin can modify reservations
 
     setupTabs() {
         const tabButtons = document.querySelectorAll('.tab-btn');
@@ -95,57 +81,39 @@ class BookingManager {
     handleSearch() {
         if (!this.hotelApp.currentUser) {
             alert('Debes iniciar sesión para buscar habitaciones disponibles');
-            setTimeout(() => {
-                if (confirm('¿Deseas iniciar sesión ahora?')) this.hotelApp.showModal('login-modal');
-            }, 100);
+            setTimeout(() => confirm('¿Deseas iniciar sesión ahora?') && this.hotelApp.showModal('login-modal'), 100);
             return;
         }
 
-        const checkInInput = document.getElementById('check-in');
-        const checkOutInput = document.getElementById('check-out');
-        const guestsInput = document.getElementById('guests');
-
-        if (!checkInInput || !checkOutInput || !guestsInput) {
+        const inputs = ['check-in', 'check-out', 'guests'].map(id => document.getElementById(id));
+        if (inputs.some(input => !input)) {
             alert('Error: No se pudieron encontrar los campos de búsqueda');
             return;
         }
 
-        const checkIn = checkInInput.value.trim();
-        const checkOut = checkOutInput.value.trim();
-        const guestsValue = guestsInput.value;
-
-        if (!checkIn || !checkOut || !guestsValue) {
+        const [checkIn, checkOut, guests] = inputs.map(input => input.value.trim());
+        if (!checkIn || !checkOut || !guests) {
             alert('Por favor completa todos los campos de búsqueda');
             return;
         }
 
-        const guests = parseInt(guestsValue, 10);
-        if (isNaN(guests) || guests < 1) {
+        const guestsNum = parseInt(guests, 10);
+        if (isNaN(guestsNum) || guestsNum < 1) {
             alert('Por favor selecciona un número válido de huéspedes');
             return;
         }
 
         const checkInDate = new Date(checkIn);
         const checkOutDate = new Date(checkOut);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const today = new Date().setHours(0, 0, 0, 0);
 
-        if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) {
+        if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime()) || 
+            checkInDate < today || checkOutDate <= checkInDate) {
             alert('Por favor ingresa fechas válidas');
             return;
         }
 
-        if (checkInDate < today) {
-            alert('La fecha de entrada no puede ser en el pasado');
-            return;
-        }
-
-        if (checkOutDate <= checkInDate) {
-            alert('La fecha de salida debe ser posterior a la fecha de entrada');
-            return;
-        }
-
-        this.currentSearch = { checkIn, checkOut, guests };
+        this.currentSearch = { checkIn, checkOut, guests: guestsNum };
         this.searchAvailableRooms();
     }
 
@@ -178,22 +146,21 @@ class BookingManager {
     }
 
     displayResults(rooms) {
-        const loading = document.getElementById('loading');
-        const noResults = document.getElementById('no-results');
-        const resultsSection = document.getElementById('results-section');
+        const elements = {
+            loading: document.getElementById('loading'),
+            noResults: document.getElementById('no-results'),
+            resultsSection: document.getElementById('results-section')
+        };
         
-        if (loading) loading.style.display = 'none';
+        if (elements.loading) elements.loading.style.display = 'none';
         
         if (!rooms || rooms.length === 0) {
-            if (noResults) {
-                noResults.style.display = 'block';
-                // Agregar información adicional de ayuda
-                const existingHelp = noResults.querySelector('.search-help');
-                if (!existingHelp) {
+            if (elements.noResults) {
+                elements.noResults.style.display = 'block';
+                if (!elements.noResults.querySelector('.search-help')) {
                     const helpDiv = document.createElement('div');
                     helpDiv.className = 'search-help';
-                    helpDiv.style.marginTop = '1rem';
-                    helpDiv.style.color = 'var(--text-light)';
+                    helpDiv.style.cssText = 'margin-top: 1rem; color: var(--text-light);';
                     helpDiv.innerHTML = `
                         <p><strong>Sugerencias:</strong></p>
                         <ul style="text-align: left; display: inline-block;">
@@ -202,15 +169,15 @@ class BookingManager {
                             <li>Verifica que las fechas sean futuras</li>
                         </ul>
                     `;
-                    noResults.appendChild(helpDiv);
+                    elements.noResults.appendChild(helpDiv);
                 }
             }
-            if (resultsSection) resultsSection.style.display = 'none';
+            if (elements.resultsSection) elements.resultsSection.style.display = 'none';
             return;
         }
 
-        if (noResults) noResults.style.display = 'none';
-        if (resultsSection) resultsSection.style.display = 'block';
+        if (elements.noResults) elements.noResults.style.display = 'none';
+        if (elements.resultsSection) elements.resultsSection.style.display = 'block';
         
         this.updateResultsCount(rooms.length);
         this.renderRooms(rooms);
@@ -443,10 +410,7 @@ class BookingManager {
                         <h3>Total: $${(reservation.totalPrice || 0).toLocaleString()}</h3>
                     </div>
                     <div class="reservation-actions">
-                        ${reservation.status === 'confirmed' ? `
-                            <button class="btn btn-primary modify-reservation-btn" data-reservation-id="${reservation.id}"><i class="fas fa-edit"></i> Modificar</button>
-                            <button class="btn btn-danger cancel-reservation-btn" data-reservation-id="${reservation.id}"><i class="fas fa-times"></i> Cancelar</button>
-                        ` : ''}
+                        <small class="admin-notice">Para modificar o cancelar reserva contactar con el administrador</small>
                     </div>
                 </div>`;
         }).join('');
@@ -455,155 +419,11 @@ class BookingManager {
     }
 
     setupReservationActionButtons() {
-        const cancelButtons = document.querySelectorAll('.cancel-reservation-btn');
-        cancelButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                const reservationId = parseInt(this.getAttribute('data-reservation-id'));
-                if (confirm('¿Estás seguro de que quieres cancelar esta reserva?')) {
-                    if (window.hotelApp.cancelReservation(reservationId)) {
-                        alert('Reserva cancelada exitosamente');
-                        window.bookingManager.loadUserReservations();
-                    } else {
-                        alert('Error al cancelar la reserva');
-                    }
-                }
-            });
-        });
-
-        const modifyButtons = document.querySelectorAll('.modify-reservation-btn');
-        modifyButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                const reservationId = parseInt(this.getAttribute('data-reservation-id'));
-                window.bookingManager.showModifyModal(reservationId);
-            });
-        });
+        // No action buttons needed for regular users
+        // All reservation management is now handled by admin panel
     }
 
-    showModifyModal(reservationId) {
-        const reservation = this.hotelApp.reservations.find(r => r.id === reservationId);
-        if (!reservation) {
-            alert('Reserva no encontrada');
-            return;
-        }
-
-        const room = this.hotelApp.rooms.find(r => r.id === reservation.roomId);
-        if (!room) {
-            alert('Habitación no encontrada');
-            return;
-        }
-
-        this.modifyingReservationId = reservationId;
-        this.populateModifyModal(reservation, room);
-        this.hotelApp.showModal('modify-modal');
-    }
-
-    setupModifyModalEvents() {
-        const modal = document.getElementById('modify-modal');
-        if (!modal) return;
-
-        const checkInInput = modal.querySelector('#modify-check-in');
-        const checkOutInput = modal.querySelector('#modify-check-out');
-        const guestsSelect = modal.querySelector('#modify-guests');
-
-        const today = new Date().toISOString().split('T')[0];
-        checkInInput.min = today;
-
-        checkInInput.addEventListener('change', () => {
-            checkOutInput.min = checkInInput.value;
-            if (checkOutInput.value && checkOutInput.value <= checkInInput.value) {
-                checkOutInput.value = '';
-            }
-            this.updateModifyPriceSummary();
-        });
-
-        checkOutInput.addEventListener('change', () => this.updateModifyPriceSummary());
-        guestsSelect.addEventListener('change', () => this.updateModifyPriceSummary());
-    }
-
-    populateModifyModal(reservation, room) {
-        const detailsDiv = document.getElementById('modify-reservation-details');
-        detailsDiv.innerHTML = `
-            <div style="background-color: var(--bg-light); padding: 1.5rem; border-radius: var(--border-radius); margin-bottom: 1.5rem;">
-                <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Reserva Actual</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                    <div><strong>Habitación:</strong><br>${room.name}</div>
-                    <div><strong>Fecha de Entrada:</strong><br>${this.hotelApp.formatDate(reservation.checkIn)}</div>
-                    <div><strong>Fecha de Salida:</strong><br>${this.hotelApp.formatDate(reservation.checkOut)}</div>
-                    <div><strong>Huéspedes:</strong><br>${reservation.guests} persona${reservation.guests > 1 ? 's' : ''}</div>
-                </div>
-            </div>`;
-
-        document.getElementById('modify-check-in').value = reservation.checkIn;
-        document.getElementById('modify-check-out').value = reservation.checkOut;
-        document.getElementById('modify-guests').value = reservation.guests;
-        document.getElementById('modify-notes').value = reservation.notes || '';
-        this.updateModifyPriceSummary();
-    }
-
-    updateModifyPriceSummary() {
-        const checkIn = document.getElementById('modify-check-in').value;
-        const checkOut = document.getElementById('modify-check-out').value;
-        const guests = parseInt(document.getElementById('modify-guests').value);
-
-        if (!checkIn || !checkOut || !guests) {
-            document.getElementById('modify-price-summary').innerHTML = '';
-            return;
-        }
-
-        const reservation = this.hotelApp.reservations.find(r => r.id === this.modifyingReservationId);
-        const room = this.hotelApp.rooms.find(r => r.id === reservation.roomId);
-        const nights = this.hotelApp.calculateNights(checkIn, checkOut);
-        const totalPrice = this.hotelApp.calculateTotalPrice(room.price, nights);
-
-        document.getElementById('modify-price-summary').innerHTML = `
-            <div style="background-color: var(--primary-color); color: white; padding: 1rem; border-radius: var(--border-radius); text-align: center; margin: 1rem 0;">
-                <h3 style="color: white; margin: 0;">Nuevo Total: $${totalPrice.toLocaleString()}</h3>
-                <small>$${room.price.toLocaleString()} × ${nights} noche${nights > 1 ? 's' : ''}</small>
-            </div>
-        `;
-    }
-
-    handleModifyReservation() {
-        if (!this.modifyingReservationId) {
-            alert('Error: No se pudo identificar la reserva');
-            return;
-        }
-
-        const checkIn = document.getElementById('modify-check-in').value;
-        const checkOut = document.getElementById('modify-check-out').value;
-        const guests = parseInt(document.getElementById('modify-guests').value);
-        const notes = document.getElementById('modify-notes').value;
-
-        if (!checkIn || !checkOut || !guests) {
-            alert('Por favor completa todos los campos requeridos');
-            return;
-        }
-
-        if (new Date(checkIn) >= new Date(checkOut)) {
-            alert('La fecha de salida debe ser posterior a la fecha de entrada');
-            return;
-        }
-
-        const reservation = this.hotelApp.reservations.find(r => r.id === this.modifyingReservationId);
-        const isAvailable = this.hotelApp.checkRoomAvailabilityForModification(reservation.roomId, checkIn, checkOut, this.modifyingReservationId);
-
-        if (!isAvailable) {
-            alert('La habitación no está disponible para las nuevas fechas seleccionadas');
-            return;
-        }
-
-        const modifiedReservation = this.hotelApp.modifyReservation(this.modifyingReservationId, checkIn, checkOut, guests, notes);
-
-        if (modifiedReservation) {
-            this.hotelApp.hideModals();
-            alert('¡Reserva modificada exitosamente!');
-            this.loadUserReservations();
-        } else {
-            alert('Error al modificar la reserva');
-        }
-    }
+    // Reservation modification methods removed - only admin can modify reservations
 
     updateSearchLoginNotice() {
         const loginNotice = document.getElementById('search-login-notice');

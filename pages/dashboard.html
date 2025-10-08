@@ -357,10 +357,7 @@
                                 ` : ''}
                             </div>
                             <div class="reservation-actions">
-                                ${reservation.status === 'confirmed' ? `
-                                    <button class="btn btn-secondary" onclick="window.userDashboard.modifyReservation(${reservation.id})">Modificar</button>
-                                    <button class="btn btn-danger" onclick="window.userDashboard.cancelReservation(${reservation.id})">Cancelar</button>
-                                ` : ''}
+                                <small class="admin-notice">Para modificar o cancelar reserva contactar con el administrador</small>
                             </div>
                         </div>
                     `;
@@ -398,23 +395,7 @@
                 }
             }
 
-            cancelReservation(reservationId) {
-                if (confirm('¿Estás seguro de que quieres cancelar esta reserva?')) {
-                    const result = window.hotelApp.bookingManager.cancelReservation(reservationId);
-                    
-                    if (result.success) {
-                        window.hotelApp.showMessage(result.message, 'success');
-                        this.loadReservations();
-                    } else {
-                        window.hotelApp.showMessage(result.message, 'error');
-                    }
-                }
-            }
-
-            modifyReservation(reservationId) {
-                // This would open a modal to modify the reservation
-                window.hotelApp.showMessage('Función de modificación en desarrollo', 'info');
-            }
+            // Reservation modification and cancellation methods removed - only admin can manage reservations
 
             showEditForm() {
                 document.getElementById('edit-form').style.display = 'block';

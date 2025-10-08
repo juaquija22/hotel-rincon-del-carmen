@@ -24,44 +24,36 @@ class HotelApp {
 
     initializeDefaultRooms() {
         this.rooms = [
-            {
-                id: 1, name: "Habitación Deluxe", description: "Amplia habitación con vista al jardín",
-                price: 250000, maxGuests: 2, beds: 1, available: true,
-                image: "images/suit1.jpg",
-                features: ["WiFi gratuito", "Minibar", "TV 55\"", "Aire acondicionado", "Baño privado"]
-            },
-            {
-                id: 2, name: "Suite Ejecutiva", description: "Suite de lujo con sala de estar separada",
-                price: 450000, maxGuests: 4, beds: 2, available: true,
-                image: "images/suit2.jpg",
-                features: ["WiFi gratuito", "Minibar", "TV 65\"", "Jacuzzi", "Sala de estar", "Vista panorámica"]
-            },
-            {
-                id: 3, name: "Habitación Familiar", description: "Perfecta para familias con niños",
-                price: 350000, maxGuests: 6, beds: 3, available: true,
-                image: "images/suit3.jpg",
-                features: ["WiFi gratuito", "Minibar", "TV 50\"", "Aire acondicionado", "Cuna disponible", "Área de juegos"]
-            },
-            {
-                id: 4, name: "Habitación Estándar", description: "Cómoda habitación con todas las comodidades",
-                price: 180000, maxGuests: 2, beds: 1, available: true,
-                image: "images/suit4.jpg",
-                features: ["WiFi gratuito", "TV 43\"", "Aire acondicionado", "Baño privado", "Vista al jardín"]
-            },
-            {
-                id: 5, name: "Suite Presidencial", description: "La máxima expresión de lujo y comodidad",
-                price: 750000, maxGuests: 4, beds: 1, available: true,
-                image: "images/suit5.jpg",
-                features: ["WiFi gratuito", "Minibar premium", "TV 75\"", "Jacuzzi privado", "Terraza privada", "Servicio de mayordomo", "Vista panorámica"]
-            },
-            {
-                id: 6, name: "Habitación Superior", description: "Elegante habitación con acabados de lujo",
-                price: 320000, maxGuests: 3, beds: 2, available: true,
-                image: "images/suit6.jpg",
-                features: ["WiFi gratuito", "Minibar", "TV 50\"", "Aire acondicionado", "Baño privado", "Balcón privado"]
-            }
+            { id: 1, name: "Habitación Deluxe", description: "Amplia habitación con vista al jardín", price: 250000, maxGuests: 2, beds: 1, available: true, image: "images/suit1.jpg", features: ["WiFi gratuito", "Minibar", "TV 55\"", "Aire acondicionado", "Baño privado"] },
+            { id: 2, name: "Suite Ejecutiva", description: "Suite de lujo con sala de estar separada", price: 450000, maxGuests: 4, beds: 2, available: true, image: "images/suit2.jpg", features: ["WiFi gratuito", "Minibar", "TV 65\"", "Jacuzzi", "Sala de estar", "Vista panorámica"] },
+            { id: 3, name: "Habitación Familiar", description: "Perfecta para familias con niños", price: 350000, maxGuests: 6, beds: 3, available: true, image: "images/suit3.jpg", features: ["WiFi gratuito", "Minibar", "TV 50\"", "Aire acondicionado", "Cuna disponible", "Área de juegos"] },
+            { id: 4, name: "Habitación Estándar", description: "Cómoda habitación con todas las comodidades", price: 180000, maxGuests: 2, beds: 1, available: true, image: "images/suit4.jpg", features: ["WiFi gratuito", "TV 43\"", "Aire acondicionado", "Baño privado", "Vista al jardín"] },
+            { id: 5, name: "Suite Presidencial", description: "La máxima expresión de lujo y comodidad", price: 750000, maxGuests: 4, beds: 1, available: true, image: "images/suit5.jpg", features: ["WiFi gratuito", "Minibar premium", "TV 75\"", "Jacuzzi privado", "Terraza privada", "Servicio de mayordomo", "Vista panorámica"] },
+            { id: 6, name: "Habitación Superior", description: "Elegante habitación con acabados de lujo", price: 320000, maxGuests: 3, beds: 2, available: true, image: "images/suit6.jpg", features: ["WiFi gratuito", "Minibar", "TV 50\"", "Aire acondicionado", "Baño privado", "Balcón privado"] }
         ];
+        this.initializeDefaultAdmin();
         this.saveData();
+    }
+
+    initializeDefaultAdmin() {
+        const users = JSON.parse(localStorage.getItem('hotel_users') || '[]');
+        const adminExists = users.find(u => u.role === 'admin');
+        
+        if (!adminExists) {
+            const adminUser = {
+                id: 1,
+                idNumber: '12345678',
+                name: 'Administrador Hotel',
+                nationality: 'Colombiana',
+                email: 'admin@hotel.com',
+                phone: '+57 316 6365 224',
+                password: 'admin123',
+                role: 'admin',
+                createdAt: new Date().toISOString()
+            };
+            users.unshift(adminUser);
+            localStorage.setItem('hotel_users', JSON.stringify(users));
+        }
     }
 
     saveData() {
@@ -170,7 +162,6 @@ class HotelApp {
                 
                 loginBtn.onclick = (e) => {
                     e.preventDefault();
-                    // Verificar que el usuario esté autenticado antes de redirigir
                     if (this.currentUser && this.currentUser.id) {
                         window.location.href = dashboardPath;
                     } else {
@@ -183,6 +174,7 @@ class HotelApp {
                 registerBtn.style.display = 'none';
             }
             this.addLogoutButton();
+            this.addAdminLink();
         } else {
             if (loginBtn) {
                 loginBtn.textContent = 'Iniciar Sesión';
@@ -195,6 +187,7 @@ class HotelApp {
                 registerBtn.href = '#';
             }
             this.removeLogoutButton();
+            this.removeAdminLink();
         }
 
         if (window.bookingManager && window.bookingManager.updateSearchLoginNotice) {
@@ -225,6 +218,33 @@ class HotelApp {
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
             logoutBtn.remove();
+        }
+    }
+
+    addAdminLink() {
+        if (document.getElementById('admin-link') || !this.currentUser || this.currentUser.role !== 'admin') return;
+
+        const loginBtn = document.getElementById('login-btn');
+        if (!loginBtn) return;
+
+        const adminLink = document.createElement('a');
+        adminLink.id = 'admin-link';
+        adminLink.href = '#';
+        adminLink.className = 'nav-link admin-link';
+        adminLink.innerHTML = '<i class="fas fa-cog"></i> Administración';
+        loginBtn.parentNode.insertBefore(adminLink, loginBtn.nextSibling);
+        
+        adminLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const adminPath = window.location.pathname.includes('/pages/') ? 'admin.html' : 'pages/admin.html';
+            window.location.href = adminPath;
+        });
+    }
+
+    removeAdminLink() {
+        const adminLink = document.getElementById('admin-link');
+        if (adminLink) {
+            adminLink.remove();
         }
     }
 
@@ -278,32 +298,26 @@ class HotelApp {
     checkRoomAvailability(roomId, checkIn, checkOut) {
         const checkInDate = new Date(checkIn);
         const checkOutDate = new Date(checkOut);
-        
         if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) return false;
         
-            const hasConflict = this.reservations.some(reservation => {
+        return !this.reservations.some(reservation => {
             if (reservation.roomId !== roomId || reservation.status === 'cancelled') return false;
-            
             const resCheckIn = new Date(reservation.checkIn);
             const resCheckOut = new Date(reservation.checkOut);
             return (checkInDate < resCheckOut && checkOutDate > resCheckIn);
         });
-        
-            return !hasConflict;
     }
 
     getAvailableRooms(checkIn, checkOut, guests) {
         if (!checkIn || !checkOut || !guests) return [];
-
-        const guestsNum = typeof guests === 'string' ? parseInt(guests, 10) : guests;
+        const guestsNum = parseInt(guests, 10);
         if (isNaN(guestsNum) || guestsNum < 1) return [];
         
-        return this.rooms.filter(room => {
-            const hasCapacity = room.maxGuests >= guestsNum;
-            const isMarkedAvailable = room.available === true || room.available === undefined;
-            const isAvailableInDates = this.checkRoomAvailability(room.id, checkIn, checkOut);
-            return hasCapacity && isMarkedAvailable && isAvailableInDates;
-        });
+        return this.rooms.filter(room => 
+            room.maxGuests >= guestsNum && 
+            (room.available !== false) && 
+            this.checkRoomAvailability(room.id, checkIn, checkOut)
+        );
     }
 
     login(email, password) {
@@ -322,6 +336,7 @@ class HotelApp {
                 phone: user.phone, 
                 nationality: user.nationality, 
                 idNumber: user.idNumber,
+                role: user.role || 'user',
                 createdAt: user.createdAt
             };
             
@@ -345,9 +360,10 @@ class HotelApp {
                 idNumber: userData.idNumber,
                 name: userData.name,
                 nationality: userData.nationality,
-            email: userData.email.toLowerCase(),
+                email: userData.email.toLowerCase(),
                 phone: userData.phone,
                 password: userData.password,
+                role: 'user',
                 createdAt: new Date().toISOString()
         };
 
@@ -361,6 +377,7 @@ class HotelApp {
                 phone: newUser.phone, 
                 nationality: newUser.nationality, 
                 idNumber: newUser.idNumber,
+                role: newUser.role,
                 createdAt: newUser.createdAt
             };
             
@@ -388,23 +405,14 @@ class HotelApp {
         const room = this.rooms.find(r => r.id === roomId);
         if (!room || !this.currentUser) return false;
 
-        const nights = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
-        const totalPrice = this.calculateTotalPrice(room.price, nights);
-
+        const nights = this.calculateNights(checkIn, checkOut);
         const reservation = {
             id: Date.now(), 
-            roomId, 
-            userId: this.currentUser.id,
-            checkIn, 
-            checkOut, 
-            guests, 
-            totalPrice, 
-            notes,
-            status: 'confirmed', 
+            roomId, userId: this.currentUser.id, checkIn, checkOut, guests, 
+            totalPrice: this.calculateTotalPrice(room.price, nights), 
+            notes, status: 'confirmed', 
             createdAt: new Date().toISOString(),
-            roomName: room.name, 
-            userName: this.currentUser.name, 
-            userEmail: this.currentUser.email
+            roomName: room.name, userName: this.currentUser.name, userEmail: this.currentUser.email
         };
 
         this.reservations.push(reservation);

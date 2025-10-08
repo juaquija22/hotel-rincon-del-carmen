@@ -1,3 +1,10 @@
+admin@hotel.com
+admin123
+
+
+
+
+
 # Hotel el Rincón del Carmen - Sitio Web
 
 Un sitio web completo y funcional para el Hotel el Rincón del Carmen, desarrollado con tecnologías web modernas y un enfoque mobile-first.
