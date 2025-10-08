@@ -1,8 +1,12 @@
+/**
+ * Clase que maneja toda la lógica de búsqueda y reservas
+ * Búsqueda de habitaciones, filtrado y creación de reservas
+ */
 class BookingManager {
     constructor(hotelApp) {
-        this.hotelApp = hotelApp;
-        this.currentSearch = null;
-        this.setupEventListeners();
+        this.hotelApp = hotelApp;    // Referencia a la aplicación principal
+        this.currentSearch = null;   // Almacena la búsqueda actual
+        this.setupEventListeners();  // Configurar eventos
     }
 
     setupEventListeners() {
@@ -78,7 +82,12 @@ class BookingManager {
         }
     }
 
+    /**
+     * Maneja la búsqueda de habitaciones disponibles
+     * Requiere que el usuario esté logueado
+     */
     handleSearch() {
+        // Verificar que el usuario esté logueado
         if (!this.hotelApp.currentUser) {
             alert('Debes iniciar sesión para buscar habitaciones disponibles');
             setTimeout(() => confirm('¿Deseas iniciar sesión ahora?') && this.hotelApp.showModal('login-modal'), 100);

@@ -1,8 +1,12 @@
+/**
+ * Clase que maneja todo el panel de administración
+ * Gestión de reservas, habitaciones, usuarios y estadísticas
+ */
 class AdminPanel {
     constructor() {
-        this.currentUser = null;
-        this.setupEventListeners();
-        this.checkAdminAccess();
+        this.currentUser = null;    // Usuario administrador actual
+        this.setupEventListeners(); // Configurar eventos del panel
+        this.checkAdminAccess();    // Verificar acceso de administrador
     }
 
     setupEventListeners() {
@@ -15,6 +19,10 @@ class AdminPanel {
 
     }
 
+    /**
+     * Verifica que el usuario actual tenga permisos de administrador
+     * Carga los datos del panel si tiene acceso, sino muestra error
+     */
     checkAdminAccess() {
         const savedUser = localStorage.getItem('current_user');
         if (!savedUser) {
@@ -25,6 +33,7 @@ class AdminPanel {
         try {
             this.currentUser = JSON.parse(savedUser);
             if (this.currentUser?.role === 'admin') {
+                // Cargar todos los datos del panel de administración
                 this.loadOverview();
                 this.loadReservations();
                 this.loadRooms();

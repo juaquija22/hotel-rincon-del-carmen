@@ -1,7 +1,11 @@
+/**
+ * Clase que maneja toda la lógica de autenticación
+ * Registro, login y validación de formularios
+ */
 class AuthManager {
     constructor(hotelApp) {
-        this.hotelApp = hotelApp;
-        this.setupEventListeners();
+        this.hotelApp = hotelApp;  // Referencia a la aplicación principal
+        this.setupEventListeners(); // Configurar eventos de formularios
     }
 
     setupEventListeners() {
@@ -50,29 +54,38 @@ class AuthManager {
         }
     }
 
+    /**
+     * Maneja el proceso de login del usuario
+     * Valida los datos y llama al método login de HotelApp
+     */
     handleLogin() {
         const email = document.getElementById('login-email').value.trim();
         const password = document.getElementById('login-password').value;
 
+        // Validar campos vacíos
         if (!email || !password) {
             alert('Por favor completa todos los campos');
             return;
         }
 
+        // Validar formato de email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             alert('Por favor ingresa un email válido');
             return;
         }
 
+        // Intentar login
         const result = this.hotelApp.login(email, password);
         
         if (result.success) {
             document.getElementById('login-form').reset();
         } else {
+            // Manejar diferentes tipos de errores
             switch (result.error) {
                 case 'email_not_found':
                     alert('Este email no está registrado. Por favor regístrate primero.');
+                    // Ofrecer registro automático
                     setTimeout(() => {
                         if (confirm('¿Deseas registrarte ahora?')) {
                             this.hotelApp.hideModals();

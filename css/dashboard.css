@@ -2,7 +2,7 @@
     display: grid;
     grid-template-columns: 300px 1fr;
     min-height: 100vh;
-    margin-top: 70px;
+    margin-top: 80px;
     gap: 2rem;
     padding: 2rem;
 }
@@ -260,7 +260,7 @@
 .form-group input:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(44, 85, 48, 0.1);
+    box-shadow: 0 0 0 3px rgba(135, 206, 235, 0.1);
 }
 
 .form-actions {
@@ -302,7 +302,7 @@
 }
 
 .stat-card {
-    background: linear-gradient(135deg, var(--primary-color), #2d5a31);
+    background: linear-gradient(135deg, var(--primary-color), var(--steel-blue));
     color: white;
     padding: 2rem;
     border-radius: var(--border-radius);

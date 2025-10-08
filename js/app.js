@@ -1,27 +1,43 @@
+/**
+ * Clase principal de la aplicación del hotel
+ * Maneja toda la lógica central del sistema de reservas
+ */
 class HotelApp {
     constructor() {
-        this.currentUser = null;
-        this.rooms = [];
-        this.reservations = [];
-        this.init();
+        this.currentUser = null;    // Usuario actualmente logueado
+        this.rooms = [];           // Array de habitaciones disponibles
+        this.reservations = [];    // Array de todas las reservas
+        this.init();               // Inicializar la aplicación
     }
 
+    /**
+     * Inicializa la aplicación cargando datos y configurando eventos
+     */
     init() {
-        this.loadData();
-        this.setupEventListeners();
-        this.checkAuthStatus();
+        this.loadData();              // Cargar datos del localStorage
+        this.setupEventListeners();   // Configurar eventos del DOM
+        this.checkAuthStatus();       // Verificar estado de autenticación
     }
 
+    /**
+     * Carga todos los datos del localStorage
+     * Si no hay habitaciones, inicializa las habitaciones por defecto
+     */
     loadData() {
         this.rooms = JSON.parse(localStorage.getItem('hotel_rooms') || '[]');
         this.reservations = JSON.parse(localStorage.getItem('hotel_reservations') || '[]');
         this.currentUser = JSON.parse(localStorage.getItem('current_user') || 'null');
         
+        // Si no hay habitaciones, crear las habitaciones por defecto
         if (this.rooms.length === 0) {
             this.initializeDefaultRooms();
         }
     }
 
+    /**
+     * Inicializa las habitaciones por defecto del hotel
+     * Crea 6 tipos de habitaciones con diferentes precios y características
+     */
     initializeDefaultRooms() {
         this.rooms = [
             { id: 1, name: "Habitación Deluxe", description: "Amplia habitación con vista al jardín", price: 250000, maxGuests: 2, beds: 1, available: true, image: "images/suit1.jpg", features: ["WiFi gratuito", "Minibar", "TV 55\"", "Aire acondicionado", "Baño privado"] },
@@ -31,8 +47,8 @@ class HotelApp {
             { id: 5, name: "Suite Presidencial", description: "La máxima expresión de lujo y comodidad", price: 750000, maxGuests: 4, beds: 1, available: true, image: "images/suit5.jpg", features: ["WiFi gratuito", "Minibar premium", "TV 75\"", "Jacuzzi privado", "Terraza privada", "Servicio de mayordomo", "Vista panorámica"] },
             { id: 6, name: "Habitación Superior", description: "Elegante habitación con acabados de lujo", price: 320000, maxGuests: 3, beds: 2, available: true, image: "images/suit6.jpg", features: ["WiFi gratuito", "Minibar", "TV 50\"", "Aire acondicionado", "Baño privado", "Balcón privado"] }
         ];
-        this.initializeDefaultAdmin();
-        this.saveData();
+        this.initializeDefaultAdmin();  // Crear usuario administrador por defecto
+        this.saveData();               // Guardar datos en localStorage
     }
 
     initializeDefaultAdmin() {
@@ -56,6 +72,9 @@ class HotelApp {
         }
     }
 
+    /**
+     * Guarda todos los datos en localStorage para persistencia
+     */
     saveData() {
         localStorage.setItem('hotel_rooms', JSON.stringify(this.rooms));
         localStorage.setItem('hotel_reservations', JSON.stringify(this.reservations));
@@ -320,25 +339,32 @@ class HotelApp {
         );
     }
 
+    /**
+     * Autentica a un usuario con email y contraseña
+     * @param {string} email - Email del usuario
+     * @param {string} password - Contraseña del usuario
+     * @returns {Object} - Objeto con success: boolean y error opcional
+     */
     login(email, password) {
         if (!email || !password) return { success: false, error: 'empty_fields' };
 
         const users = JSON.parse(localStorage.getItem('hotel_users') || '[]');
-            const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+        const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
         
         if (!user) return { success: false, error: 'email_not_found' };
         if (user.password !== password) return { success: false, error: 'wrong_password' };
         
+        // Establecer usuario actual
         this.currentUser = {
-                id: user.id, 
-                name: user.name, 
-                email: user.email,
-                phone: user.phone, 
-                nationality: user.nationality, 
-                idNumber: user.idNumber,
-                role: user.role || 'user',
-                createdAt: user.createdAt
-            };
+            id: user.id, 
+            name: user.name, 
+            email: user.email,
+            phone: user.phone, 
+            nationality: user.nationality, 
+            idNumber: user.idNumber,
+            role: user.role || 'user',
+            createdAt: user.createdAt
+        };
             
         this.saveData();
         this.updateAuthUI();
@@ -401,6 +427,15 @@ class HotelApp {
         }, 1500);
     }
 
+    /**
+     * Crea una nueva reserva para el usuario actual
+     * @param {number} roomId - ID de la habitación
+     * @param {string} checkIn - Fecha de entrada (YYYY-MM-DD)
+     * @param {string} checkOut - Fecha de salida (YYYY-MM-DD)
+     * @param {number} guests - Número de huéspedes
+     * @param {string} notes - Notas adicionales (opcional)
+     * @returns {Object|false} - Objeto de reserva o false si falla
+     */
     createReservation(roomId, checkIn, checkOut, guests, notes = '') {
         const room = this.rooms.find(r => r.id === roomId);
         if (!room || !this.currentUser) return false;
@@ -408,11 +443,18 @@ class HotelApp {
         const nights = this.calculateNights(checkIn, checkOut);
         const reservation = {
             id: Date.now(), 
-            roomId, userId: this.currentUser.id, checkIn, checkOut, guests, 
+            roomId, 
+            userId: this.currentUser.id, 
+            checkIn, 
+            checkOut, 
+            guests, 
             totalPrice: this.calculateTotalPrice(room.price, nights), 
-            notes, status: 'confirmed', 
+            notes, 
+            status: 'confirmed', 
             createdAt: new Date().toISOString(),
-            roomName: room.name, userName: this.currentUser.name, userEmail: this.currentUser.email
+            roomName: room.name, 
+            userName: this.currentUser.name, 
+            userEmail: this.currentUser.email
         };
 
         this.reservations.push(reservation);

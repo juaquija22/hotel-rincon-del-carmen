@@ -1,6 +1,6 @@
 .availability-hero {
     min-height: 50vh;
-    margin-top: 70px;
+    margin-top: 80px;
 }
 
 .availability-hero-content {
@@ -87,7 +87,7 @@
 .form-group select:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(44, 85, 48, 0.1);
+    box-shadow: 0 0 0 3px rgba(135, 206, 235, 0.1);
 }
 
 .search-btn {
