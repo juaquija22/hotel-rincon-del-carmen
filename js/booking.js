@@ -3,12 +3,23 @@
  * Búsqueda de habitaciones, filtrado y creación de reservas
  */
 class BookingManager {
+    /**
+     * Constructor de BookingManager
+     * @param {HotelApp} hotelApp - Referencia a la instancia principal de la aplicación
+     */
     constructor(hotelApp) {
         this.hotelApp = hotelApp;    // Referencia a la aplicación principal
-        this.currentSearch = null;   // Almacena la búsqueda actual
+        this.currentSearch = null;   // Almacena la búsqueda actual (fechas, huéspedes)
         this.setupEventListeners();  // Configurar eventos
     }
 
+    /**
+     * Configura todos los eventos relacionados con reservas
+     * - Formulario de búsqueda
+     * - Formulario de confirmación de reserva
+     * - Pestañas de navegación
+     * - Validación de fechas
+     */
     setupEventListeners() {
         const initEvents = () => {
             this.updateSearchLoginNotice();
@@ -45,8 +56,10 @@ class BookingManager {
         }
     }
 
-    // Modify modal form events removed - only admin can modify reservations
-
+    /**
+     * Configura las pestañas del dashboard (Búsqueda / Mis Reservas)
+     * Maneja el cambio entre las diferentes vistas
+     */
     setupTabs() {
         const tabButtons = document.querySelectorAll('.tab-btn');
         const tabPanels = document.querySelectorAll('.tab-panel');
@@ -64,6 +77,11 @@ class BookingManager {
         });
     }
 
+    /**
+     * Establece las fechas mínimas permitidas en los campos de fecha
+     * - La fecha de entrada no puede ser anterior a hoy
+     * - La fecha de salida debe ser posterior a la fecha de entrada
+     */
     setMinimumDates() {
         const today = new Date().toISOString().split('T')[0];
         const checkInInput = document.getElementById('check-in');
@@ -84,7 +102,10 @@ class BookingManager {
 
     /**
      * Maneja la búsqueda de habitaciones disponibles
-     * Requiere que el usuario esté logueado
+     * - Verifica que el usuario esté logueado
+     * - Valida que todos los campos estén completos
+     * - Valida que las fechas sean válidas y futuras
+     * - Guarda los criterios de búsqueda y ejecuta la búsqueda
      */
     handleSearch() {
         // Verificar que el usuario esté logueado
@@ -126,6 +147,11 @@ class BookingManager {
         this.searchAvailableRooms();
     }
 
+    /**
+     * Ejecuta la búsqueda de habitaciones disponibles
+     * Muestra un indicador de carga mientras busca
+     * Usa los criterios guardados en this.currentSearch
+     */
     searchAvailableRooms() {
         if (!this.currentSearch) {
             alert('Error: No hay datos de búsqueda');
@@ -150,7 +176,11 @@ class BookingManager {
         }, 500);
     }
 
-
+    /**
+     * Muestra los resultados de la búsqueda en la interfaz
+     * @param {Array} rooms - Array de habitaciones disponibles
+     * Si no hay resultados, muestra un mensaje con sugerencias
+     */
     displayResults(rooms) {
         const elements = {
             loading: document.getElementById('loading'),
@@ -192,7 +222,15 @@ class BookingManager {
         this.renderRooms(rooms);
     }
 
-
+    /**
+     * Renderiza las tarjetas de habitaciones disponibles
+     * @param {Array} rooms - Array de habitaciones a mostrar
+     * Crea HTML con información detallada de cada habitación:
+     * - Imagen, nombre, descripción
+     * - Precio por noche y precio total
+     * - Características y servicios
+     * - Botón para reservar
+     */
     renderRooms(rooms) {
         const roomsGrid = document.getElementById('rooms-grid');
         if (!roomsGrid || !this.currentSearch) return;
@@ -244,6 +282,13 @@ class BookingManager {
         }).join('');
     }
 
+    /**
+     * Muestra el modal de confirmación de reserva
+     * @param {number} roomId - ID de la habitación seleccionada
+     * - Verifica disponibilidad en tiempo real
+     * - Muestra resumen completo de la reserva
+     * - Calcula y muestra el precio total
+     */
     showBookingModal(roomId) {
         if (!this.hotelApp.currentUser) {
             alert('Debes iniciar sesión para hacer una reserva');
@@ -288,6 +333,13 @@ class BookingManager {
         this.hotelApp.showModal('booking-modal');
     }
 
+    /**
+     * Procesa y confirma una reserva
+     * - Verifica autenticación del usuario
+     * - Valida disponibilidad de la habitación
+     * - Crea la reserva en el sistema
+     * - Muestra confirmación y redirige a "Mis Reservas"
+     */
     handleBooking() {
         if (!this.hotelApp.currentUser) {
             alert('Debes iniciar sesión para hacer una reserva');
@@ -332,6 +384,13 @@ class BookingManager {
     }
     }
 
+    /**
+     * Carga y muestra todas las reservas del usuario actual
+     * - Verifica que el usuario esté logueado
+     * - Filtra reservas por ID de usuario
+     * - Muestra información completa de cada reserva
+     * - Incluye estados: confirmada, cancelada, pendiente
+     */
     loadUserReservations() {
         const loginRequired = document.getElementById('login-required');
         const reservationsList = document.getElementById('reservations-list');
@@ -420,8 +479,10 @@ class BookingManager {
     }
 
 
-    // Reservation modification methods removed - only admin can modify reservations
-
+    /**
+     * Actualiza el aviso de login en el formulario de búsqueda
+     * Muestra u oculta el mensaje según si hay un usuario logueado
+     */
     updateSearchLoginNotice() {
         const loginNotice = document.getElementById('search-login-notice');
         if (loginNotice) {
@@ -430,6 +491,8 @@ class BookingManager {
     }
 }
 
+// Inicializa el gestor de reservas después de que HotelApp esté listo
+// Usa un delay para asegurar que la aplicación principal esté cargada
 document.addEventListener('DOMContentLoaded', () => {
     const initBooking = () => {
         if (window.hotelApp) {

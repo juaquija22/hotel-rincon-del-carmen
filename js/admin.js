@@ -3,12 +3,20 @@
  * Gestión de reservas, habitaciones, usuarios y estadísticas
  */
 class AdminPanel {
+    /**
+     * Constructor del Panel de Administración
+     * Verifica acceso y configura el panel si el usuario es admin
+     */
     constructor() {
         this.currentUser = null;    // Usuario administrador actual
         this.setupEventListeners(); // Configurar eventos del panel
         this.checkAdminAccess();    // Verificar acceso de administrador
     }
 
+    /**
+     * Configura los eventos de navegación del panel de administración
+     * Permite cambiar entre las diferentes secciones (Overview, Reservas, Habitaciones, Usuarios)
+     */
     setupEventListeners() {
         document.querySelectorAll('.sidebar-nav a').forEach(link => {
             link.addEventListener('click', (e) => {
@@ -21,7 +29,10 @@ class AdminPanel {
 
     /**
      * Verifica que el usuario actual tenga permisos de administrador
-     * Carga los datos del panel si tiene acceso, sino muestra error
+     * - Comprueba si hay un usuario logueado
+     * - Verifica que tenga rol 'admin'
+     * - Carga los datos del panel si tiene acceso
+     * - Muestra mensaje de acceso denegado si no es admin
      */
     checkAdminAccess() {
         const savedUser = localStorage.getItem('current_user');
@@ -46,6 +57,10 @@ class AdminPanel {
         }
     }
 
+    /**
+     * Muestra un mensaje de acceso denegado
+     * Se ejecuta cuando un usuario sin permisos intenta acceder al panel
+     */
     showAccessDenied() {
         document.querySelector('.dashboard-main').innerHTML = `
             <div class="access-denied">
@@ -57,6 +72,11 @@ class AdminPanel {
         `;
     }
 
+    /**
+     * Cambia la sección visible del panel de administración
+     * @param {string} sectionName - Nombre de la sección (overview, reservations, rooms, users)
+     * Actualiza la UI y carga los datos correspondientes
+     */
     showSection(sectionName) {
         document.querySelectorAll('.dashboard-section').forEach(section => section.classList.remove('active'));
         document.querySelectorAll('.sidebar-nav a').forEach(link => link.classList.remove('active'));
@@ -74,6 +94,15 @@ class AdminPanel {
         }
     }
 
+    /**
+     * Carga la vista general del dashboard (Overview)
+     * Muestra estadísticas clave:
+     * - Total de reservas
+     * - Total de habitaciones
+     * - Total de usuarios
+     * - Ingresos totales (solo reservas confirmadas)
+     * - Reservas recientes (últimas 5)
+     */
     loadOverview() {
         const reservations = JSON.parse(localStorage.getItem('hotel_reservations') || '[]');
         const rooms = JSON.parse(localStorage.getItem('hotel_rooms') || '[]');
@@ -91,6 +120,10 @@ class AdminPanel {
         this.loadRecentReservations();
     }
 
+    /**
+     * Carga y muestra las 5 reservas más recientes
+     * Ordenadas por fecha de creación (más reciente primero)
+     */
     loadRecentReservations() {
         const reservations = JSON.parse(localStorage.getItem('hotel_reservations') || '[]');
         const recentReservations = reservations
@@ -127,10 +160,23 @@ class AdminPanel {
         }).join('');
     }
 
+    /**
+     * Carga todas las reservas del sistema
+     */
     loadReservations() {
         this.displayReservations(JSON.parse(localStorage.getItem('hotel_reservations') || '[]'));
     }
 
+    /**
+     * Muestra todas las reservas con detalles completos
+     * @param {Array} reservations - Array de reservas a mostrar
+     * Incluye información de:
+     * - Cliente y contacto
+     * - Habitación reservada
+     * - Fechas y huéspedes
+     * - Estado (confirmada/cancelada/pendiente)
+     * - Acciones disponibles (cancelar, reactivar, eliminar)
+     */
     displayReservations(reservations) {
         const rooms = window.hotelApp.rooms;
         const users = JSON.parse(localStorage.getItem('hotel_users') || '[]');
@@ -212,6 +258,12 @@ class AdminPanel {
         }).join('');
     }
 
+    /**
+     * Carga y muestra todas las habitaciones del hotel
+     * Permite al admin:
+     * - Ver detalles de cada habitación
+     * - Activar/desactivar disponibilidad
+     */
     loadRooms() {
         const rooms = window.hotelApp.rooms;
         const container = document.getElementById('admin-rooms-grid');
@@ -249,6 +301,11 @@ class AdminPanel {
         `).join('');
     }
 
+    /**
+     * Carga y muestra todos los usuarios registrados
+     * Excluye usuarios con rol 'admin'
+     * Muestra información completa y opción de eliminar
+     */
     loadUsers() {
         const users = JSON.parse(localStorage.getItem('hotel_users') || '[]');
         const regularUsers = users.filter(u => u.role !== 'admin');
@@ -298,8 +355,11 @@ class AdminPanel {
         `).join('');
     }
 
-
-    // Admin actions
+    /**
+     * Cancela una reserva existente (acción de administrador)
+     * @param {number} reservationId - ID de la reserva a cancelar
+     * Cambia el estado a 'cancelled' y registra la fecha de cancelación
+     */
     cancelReservation(reservationId) {
         if (confirm('¿Estás seguro de que quieres cancelar esta reserva?')) {
             const reservations = JSON.parse(localStorage.getItem('hotel_reservations') || '[]');
@@ -316,6 +376,11 @@ class AdminPanel {
         }
     }
 
+    /**
+     * Reactiva una reserva previamente cancelada
+     * @param {number} reservationId - ID de la reserva a reactivar
+     * Cambia el estado de 'cancelled' a 'confirmed'
+     */
     reactivateReservation(reservationId) {
         if (confirm('¿Estás seguro de que quieres reactivar esta reserva?')) {
             const reservations = JSON.parse(localStorage.getItem('hotel_reservations') || '[]');
@@ -332,6 +397,11 @@ class AdminPanel {
         }
     }
 
+    /**
+     * Elimina permanentemente una reserva del sistema
+     * @param {number} reservationId - ID de la reserva a eliminar
+     * Esta acción NO se puede deshacer
+     */
     deleteReservation(reservationId) {
         if (confirm('¿Estás seguro de que quieres eliminar permanentemente esta reserva? Esta acción no se puede deshacer.')) {
             const reservations = JSON.parse(localStorage.getItem('hotel_reservations') || '[]');
@@ -343,6 +413,11 @@ class AdminPanel {
         }
     }
 
+    /**
+     * Activa o desactiva la disponibilidad de una habitación
+     * @param {number} roomId - ID de la habitación
+     * Útil para mantenimiento o eventos especiales
+     */
     toggleRoomAvailability(roomId) {
         const room = window.hotelApp.rooms.find(r => r.id === roomId);
         if (room) {
@@ -353,6 +428,11 @@ class AdminPanel {
         }
     }
 
+    /**
+     * Elimina permanentemente un usuario del sistema
+     * @param {number} userId - ID del usuario a eliminar
+     * Esta acción NO se puede deshacer
+     */
     deleteUser(userId) {
         if (confirm('¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer.')) {
             const users = JSON.parse(localStorage.getItem('hotel_users') || '[]');
@@ -365,12 +445,13 @@ class AdminPanel {
     }
 }
 
-// Initialize admin panel
+// Inicializa el panel de administración y configura el logout
 document.addEventListener('DOMContentLoaded', () => {
     if (window.hotelApp) {
         window.adminPanel = new AdminPanel();
     }
     
+    // Función para manejar el cierre de sesión del administrador
     const handleLogout = () => {
         if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
             if (window.hotelApp) {
@@ -380,6 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
+    // Configurar botones de logout (panel admin y navbar)
     const logoutBtn = document.getElementById('admin-logout-btn');
     const navLogoutBtn = document.getElementById('logout-btn');
     

@@ -51,6 +51,10 @@ class HotelApp {
         this.saveData();               // Guardar datos en localStorage
     }
 
+    /**
+     * Crea el usuario administrador por defecto si no existe
+     * Email: admin@hotel.com | Password: admin123
+     */
     initializeDefaultAdmin() {
         const users = JSON.parse(localStorage.getItem('hotel_users') || '[]');
         const adminExists = users.find(u => u.role === 'admin');
@@ -83,6 +87,12 @@ class HotelApp {
         }
     }
 
+    /**
+     * Configura todos los eventos de la interfaz de usuario
+     * - Menú hamburguesa para móviles
+     * - Cierre automático del menú al hacer clic en enlaces
+     * - Modales y botones de autenticación
+     */
     setupEventListeners() {
         const initEvents = () => {
             const navToggle = document.getElementById('nav-toggle');
@@ -115,6 +125,10 @@ class HotelApp {
         }
     }
 
+    /**
+     * Configura los eventos de los modales (ventanas emergentes)
+     * Permite cerrar modales al hacer clic fuera de ellos o en el botón X
+     */
     setupModalEvents() {
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('modal') || e.target.classList.contains('close')) {
@@ -123,6 +137,10 @@ class HotelApp {
         });
     }
 
+    /**
+     * Configura los botones de inicio de sesión y registro
+     * Abre los modales correspondientes cuando se hace clic
+     */
     setupAuthButtons() {
         const loginBtn = document.getElementById('login-btn');
         const registerBtn = document.getElementById('register-btn');
@@ -142,12 +160,21 @@ class HotelApp {
         }
     }
 
+    /**
+     * Verifica si hay un usuario con sesión activa
+     * Si existe, actualiza la interfaz para mostrar su información
+     */
     checkAuthStatus() {
         if (this.currentUser) {
             this.updateAuthUI();
         }
     }
 
+    /**
+     * Actualiza la interfaz según el estado de autenticación
+     * - Si hay usuario: muestra su nombre, botón de logout y enlace al dashboard
+     * - Si NO hay usuario: muestra botones de login y registro
+     */
     updateAuthUI() {
         const loginBtn = document.getElementById('login-btn');
         const registerBtn = document.getElementById('register-btn');
@@ -196,6 +223,10 @@ class HotelApp {
         }
     }
 
+    /**
+     * Añade el botón "Cerrar Sesión" en el menú de navegación
+     * Solo se muestra cuando hay un usuario logueado
+     */
     addLogoutButton() {
         if (document.getElementById('logout-btn')) return;
 
@@ -215,6 +246,10 @@ class HotelApp {
         });
     }
 
+    /**
+     * Elimina el botón "Cerrar Sesión" del menú
+     * Se ejecuta cuando el usuario hace logout
+     */
     removeLogoutButton() {
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
@@ -222,6 +257,10 @@ class HotelApp {
         }
     }
 
+    /**
+     * Añade el enlace "Administración" en el menú
+     * Solo visible para usuarios con rol de administrador
+     */
     addAdminLink() {
         if (document.getElementById('admin-link') || !this.currentUser || this.currentUser.role !== 'admin') return;
 
@@ -243,6 +282,10 @@ class HotelApp {
     }
 
 
+    /**
+     * Muestra un modal específico por su ID
+     * Ejemplo: showModal('login-modal') abre el formulario de login
+     */
     showModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
@@ -250,12 +293,21 @@ class HotelApp {
         }
     }
 
+    /**
+     * Oculta todos los modales abiertos en la página
+     */
     hideModals() {
         document.querySelectorAll('.modal').forEach(modal => {
             modal.style.display = 'none';
         });
     }
 
+    /**
+     * Formatea una fecha en formato legible en español
+     * @param {string} date - Fecha a formatear
+     * @param {boolean} includeTime - Si es true, incluye hora y minutos
+     * @returns {string} - Fecha formateada (ej: "8 de octubre de 2025")
+     */
     formatDate(date, includeTime = false) {
         if (!date) return 'Fecha no disponible';
         try {
@@ -276,10 +328,22 @@ class HotelApp {
         }
     }
 
+    /**
+     * Calcula el precio total de una reserva
+     * @param {number} roomPrice - Precio por noche de la habitación
+     * @param {number} nights - Número de noches
+     * @returns {number} - Precio total (precio × noches)
+     */
     calculateTotalPrice(roomPrice, nights) {
         return roomPrice * nights;
     }
 
+    /**
+     * Calcula el número de noches entre dos fechas
+     * @param {string} checkIn - Fecha de entrada
+     * @param {string} checkOut - Fecha de salida
+     * @returns {number} - Número de noches (siempre >= 0)
+     */
     calculateNights(checkIn, checkOut) {
             const checkInDate = new Date(checkIn);
             const checkOutDate = new Date(checkOut);
@@ -290,6 +354,13 @@ class HotelApp {
             return nights > 0 ? nights : 0;
     }
 
+    /**
+     * Verifica si una habitación está disponible para las fechas seleccionadas
+     * @param {number} roomId - ID de la habitación a verificar
+     * @param {string} checkIn - Fecha de entrada
+     * @param {string} checkOut - Fecha de salida
+     * @returns {boolean} - true si está disponible, false si está reservada
+     */
     checkRoomAvailability(roomId, checkIn, checkOut) {
         const checkInDate = new Date(checkIn);
         const checkOutDate = new Date(checkOut);
@@ -303,6 +374,13 @@ class HotelApp {
         });
     }
 
+    /**
+     * Obtiene todas las habitaciones disponibles según criterios de búsqueda
+     * @param {string} checkIn - Fecha de entrada
+     * @param {string} checkOut - Fecha de salida
+     * @param {number} guests - Número de huéspedes
+     * @returns {Array} - Array de habitaciones disponibles que cumplen los criterios
+     */
     getAvailableRooms(checkIn, checkOut, guests) {
         if (!checkIn || !checkOut || !guests) return [];
         const guestsNum = parseInt(guests, 10);
@@ -349,6 +427,11 @@ class HotelApp {
         return { success: true };
     }
 
+    /**
+     * Registra un nuevo usuario en el sistema
+     * @param {Object} userData - Datos del usuario (name, email, password, phone, etc.)
+     * @returns {boolean} - true si el registro fue exitoso, false si el email ya existe
+     */
     register(userData) {
         const users = JSON.parse(localStorage.getItem('hotel_users') || '[]');
         
@@ -390,6 +473,10 @@ class HotelApp {
         return true;
     }
 
+    /**
+     * Cierra la sesión del usuario actual
+     * Limpia los datos y redirige a la página principal si está en páginas internas
+     */
     logout() {
         this.currentUser = null;
         localStorage.removeItem('current_user');
@@ -438,6 +525,11 @@ class HotelApp {
         return reservation;
     }
 
+    /**
+     * Cancela una reserva existente
+     * @param {number} reservationId - ID de la reserva a cancelar
+     * @returns {boolean} - true si se canceló correctamente, false si no se encontró
+     */
     cancelReservation(reservationId) {
         const reservation = this.reservations.find(r => r.id === reservationId);
         if (reservation) {
@@ -449,6 +541,15 @@ class HotelApp {
         return false;
     }
 
+    /**
+     * Modifica una reserva existente con nuevas fechas y datos
+     * @param {number} reservationId - ID de la reserva a modificar
+     * @param {string} newCheckIn - Nueva fecha de entrada
+     * @param {string} newCheckOut - Nueva fecha de salida
+     * @param {number} newGuests - Nuevo número de huéspedes
+     * @param {string} newNotes - Nuevas notas adicionales
+     * @returns {Object|false} - Objeto de reserva actualizada o false si falla
+     */
     modifyReservation(reservationId, newCheckIn, newCheckOut, newGuests, newNotes = '') {
         const reservation = this.reservations.find(r => r.id === reservationId);
         if (!reservation) return false;
@@ -475,6 +576,15 @@ class HotelApp {
         return reservation;
     }
 
+    /**
+     * Verifica disponibilidad al modificar una reserva
+     * Excluye la reserva actual de la verificación para evitar conflictos consigo misma
+     * @param {number} roomId - ID de la habitación
+     * @param {string} checkIn - Fecha de entrada
+     * @param {string} checkOut - Fecha de salida
+     * @param {number} excludeReservationId - ID de la reserva a excluir de la verificación
+     * @returns {boolean} - true si está disponible para modificar
+     */
     checkRoomAvailabilityForModification(roomId, checkIn, checkOut, excludeReservationId) {
         const checkInDate = new Date(checkIn);
         const checkOutDate = new Date(checkOut);
@@ -494,6 +604,7 @@ class HotelApp {
     }
 }
 
+// Inicializa la aplicación cuando el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
     window.hotelApp = new HotelApp();
 });

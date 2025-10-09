@@ -3,11 +3,21 @@
  * Registro, login y validación de formularios
  */
 class AuthManager {
+    /**
+     * Constructor de AuthManager
+     * @param {HotelApp} hotelApp - Referencia a la instancia principal de la aplicación
+     */
     constructor(hotelApp) {
         this.hotelApp = hotelApp;  // Referencia a la aplicación principal
         this.setupEventListeners(); // Configurar eventos de formularios
     }
 
+    /**
+     * Configura todos los eventos de los formularios de autenticación
+     * - Formulario de login
+     * - Formulario de registro
+     * - Enlaces para alternar entre login y registro
+     */
     setupEventListeners() {
         const initEvents = () => {
             const loginForm = document.getElementById('login-form');
@@ -56,7 +66,10 @@ class AuthManager {
 
     /**
      * Maneja el proceso de login del usuario
-     * Valida los datos y llama al método login de HotelApp
+     * - Valida que los campos no estén vacíos
+     * - Valida el formato del email
+     * - Intenta autenticar al usuario
+     * - Maneja diferentes tipos de errores (email no encontrado, contraseña incorrecta)
      */
     handleLogin() {
         const email = document.getElementById('login-email').value.trim();
@@ -104,6 +117,13 @@ class AuthManager {
         }
     }
 
+    /**
+     * Maneja el proceso de registro de nuevos usuarios
+     * - Valida que todos los campos estén completos
+     * - Valida formato de email, teléfono y contraseña
+     * - Verifica que el email no esté ya registrado
+     * - Crea el nuevo usuario en el sistema
+     */
     handleRegister() {
         const formData = {
             idNumber: document.getElementById('register-id').value.trim(),
@@ -161,6 +181,7 @@ class AuthManager {
     }
 }
 
+// Inicializa el gestor de autenticación después de que HotelApp esté listo
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         if (window.hotelApp) {
