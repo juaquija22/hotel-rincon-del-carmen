@@ -32,6 +32,7 @@ class SiteNavbar extends HTMLElement {
                 <a href="${base}pages/availability.html" class="nav-link">Reservas</a>
                 <a href="${base}pages/reviews.html" class="nav-link">Reseñas</a>
                 <a href="${base}pages/contact.html" class="nav-link">Contacto</a>
+                <a href="${base}pages/politicas.html" class="nav-link">Políticas</a>
                 <a href="#" class="nav-link" id="login-btn">Iniciar Sesión</a>
                 <a href="#" class="nav-link" id="register-btn">Registrarse</a>
             </div>
@@ -405,6 +406,7 @@ class SiteFooter extends HTMLElement {
                         <li><a href="${base}pages/availability.html">Reservas</a></li>
                         <li><a href="${base}pages/reviews.html">Reseñas</a></li>
                         <li><a href="${base}pages/contact.html">Contacto</a></li>
+                        <li><a href="${base}pages/politicas.html">Políticas</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">

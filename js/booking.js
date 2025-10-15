@@ -346,6 +346,16 @@ class BookingManager {
             return;
         }
 
+        // Validar aceptación de políticas
+        const acceptPoliciesCheckbox = document.getElementById('accept-policies');
+        if (acceptPoliciesCheckbox && !acceptPoliciesCheckbox.checked) {
+            // Estilos de error suaves aprovechando clases globales
+            acceptPoliciesCheckbox.classList.add('error');
+            setTimeout(() => acceptPoliciesCheckbox.classList.remove('error'), 1200);
+            alert('Debes aceptar las condiciones y políticas del hotel para continuar.');
+            return;
+        }
+
         const notes = document.getElementById('booking-notes').value;
         const roomId = this.selectedRoomId;
         

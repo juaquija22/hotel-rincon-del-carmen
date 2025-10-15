@@ -240,11 +240,26 @@ class AdminPanel {
                                 <span class="value">${reservation.notes}</span>
                             </div>
                         ` : ''}
+                        ${reservation.checkedInAt ? `
+                            <div class="detail-row">
+                                <span class="label">Check-in:</span>
+                                <span class="value">${new Date(reservation.checkedInAt).toLocaleString('es-ES')}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Atendido por:</span>
+                                <span class="value">${this.currentUser?.name || 'Administrador'}</span>
+                            </div>
+                        ` : ''}
                     </div>
                     <div class="reservation-actions">
                         <button class="btn btn-celeste" onclick="window.adminPanel.showModifyReservation(${reservation.id})">
                             <i class="fas fa-edit"></i> Modificar
                         </button>
+                        ${reservation.status === 'confirmed' && !reservation.checkedInAt ? `
+                            <button class="btn btn-success" onclick="window.adminPanel.showCheckIn(${reservation.id})">
+                                <i class="fas fa-door-open"></i> Hacer Check-in
+                            </button>
+                        ` : ''}
                         ${reservation.status === 'confirmed' ? `
                             <button class="btn btn-warning" onclick="window.adminPanel.cancelReservation(${reservation.id})">
                                 <i class="fas fa-times"></i> Cancelar
@@ -261,6 +276,87 @@ class AdminPanel {
                 </div>
             `;
         }).join('');
+    }
+
+    showCheckIn(reservationId) {
+        const reservations = JSON.parse(localStorage.getItem('hotel_reservations') || '[]');
+        const reservation = reservations.find(r => r.id === reservationId);
+        const room = window.hotelApp.rooms.find(r => r.id === (reservation ? reservation.roomId : null));
+        if (!reservation || !room) return alert('No se pudo cargar la reserva.');
+
+        this._checkinReservationId = reservationId;
+
+        const details = document.getElementById('admin-checkin-details');
+        if (details) {
+            details.innerHTML = `
+                <div><strong>Reserva:</strong> #${reservation.id}</div>
+                <div><strong>Habitación:</strong> ${room.name}</div>
+                <div><strong>Huésped:</strong> ${reservation.userName || 'N/A'}</div>
+                <div><strong>Fechas:</strong> ${new Date(reservation.checkIn).toLocaleDateString('es-ES')} - ${new Date(reservation.checkOut).toLocaleDateString('es-ES')}</div>
+            `;
+        }
+
+        const timeInput = document.getElementById('admin-checkin-time');
+        if (timeInput) {
+            // Pre-cargar 14:00 por defecto
+            timeInput.value = '14:00';
+        }
+
+        const modal = document.getElementById('admin-checkin-modal');
+        if (modal) modal.style.display = 'block';
+
+        const closeEls = modal ? modal.querySelectorAll('.close, #admin-cancel-checkin-btn') : [];
+        closeEls.forEach(el => el.addEventListener('click', () => {
+            if (modal) modal.style.display = 'none';
+        }, { once: true }));
+
+        const form = document.getElementById('admin-checkin-form');
+        if (form) {
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                this.submitCheckIn();
+            };
+        }
+    }
+
+    submitCheckIn() {
+        const reservationId = this._checkinReservationId;
+        if (!reservationId) return;
+
+        const time = document.getElementById('admin-checkin-time').value;
+        const doc = document.getElementById('admin-checkin-doc').value.trim();
+        const notes = document.getElementById('admin-checkin-notes').value.trim();
+        if (!time || !doc) {
+            return alert('Por favor completa la hora de check-in y el documento verificado.');
+        }
+
+        const reservations = JSON.parse(localStorage.getItem('hotel_reservations') || '[]');
+        const reservation = reservations.find(r => r.id === reservationId);
+        if (!reservation) return alert('No se encontró la reserva.');
+
+        // Componer fecha-hora del check-in con la fecha de entrada
+        try {
+            const checkInDate = new Date(reservation.checkIn);
+            const [hh, mm] = time.split(':').map(n => parseInt(n, 10));
+            checkInDate.setHours(hh, mm || 0, 0, 0);
+            reservation.checkedInAt = checkInDate.toISOString();
+        } catch (_) {
+            reservation.checkedInAt = new Date().toISOString();
+        }
+        reservation.checkedInBy = this.currentUser?.id;
+        if (notes) {
+            reservation.checkinNotes = notes;
+        }
+        reservation.checkinDoc = doc;
+
+        localStorage.setItem('hotel_reservations', JSON.stringify(reservations));
+        alert('Check-in registrado exitosamente');
+
+        const modal = document.getElementById('admin-checkin-modal');
+        if (modal) modal.style.display = 'none';
+
+        this.loadReservations();
+        this.loadOverview();
     }
 
     showModifyReservation(reservationId) {

@@ -147,6 +147,16 @@
                     <label for="booking-notes">Notas especiales (opcional):</label>
                     <textarea id="booking-notes" rows="3" placeholder="Menciona cualquier solicitud especial..."></textarea>
                 </div>
+                <div class="form-group" id="policies-warning" style="background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; padding: 0.75rem 1rem; border-radius: 8px;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong> Importante:</strong> el check-in inicia a las <strong>14:00</strong>. Si no te presentas antes de las <strong>16:00</strong> del día de llegada y no informas retraso, la habitación podrá ser liberada para otros huéspedes.
+                </div>
+                <div class="form-group" id="policies-consent-group">
+                    <label style="display:flex; align-items:flex-start; gap: 0.5rem; font-weight: 400; color: var(--text-light);">
+                        <input type="checkbox" id="accept-policies" style="margin-top: 0.2rem;">
+                        <span>He leído y acepto las <a href="politicas.html" target="_blank" rel="noopener" style="color: var(--primary-color); text-decoration: underline;">condiciones y políticas del hotel</a>, incluyendo el check-in a las <strong>14:00</strong> y la liberación automática a las <strong>16:00</strong> en caso de no presentarme.</span>
+                    </label>
+                </div>
                 <div class="booking-form-actions">
                     <button type="button" class="btn btn-secondary" id="cancel-booking-btn">
                         Cancelar
