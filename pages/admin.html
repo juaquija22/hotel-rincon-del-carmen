@@ -10,23 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <h2>Hotel el Rincón del Carmen</h2>
-            </div>
-            <div class="nav-menu" id="nav-menu">
-                <a href="#" class="nav-link admin-only-link">Administración</a>
-                <a href="#" class="nav-link" id="logout-btn">Cerrar Sesión</a>
-            </div>
-            <div class="nav-toggle" id="nav-toggle">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-        </div>
-    </nav>
+    <site-navbar></site-navbar>
 
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -37,6 +21,8 @@
                 <li><a href="#" class="nav-link" data-section="reservations">Gestionar Reservas</a></li>
                 <li><a href="#" class="nav-link" data-section="rooms">Habitaciones</a></li>
                 <li><a href="#" class="nav-link" data-section="users">Usuarios</a></li>
+                <li><a href="#" class="nav-link" data-section="messages">Mensajes</a></li>
+                <li><a href="#" class="nav-link" data-section="reviews">Reseñas</a></li>
             </ul>
             <div class="logout-section">
                 <button id="admin-logout-btn" class="btn btn-danger logout-btn">
@@ -140,64 +126,68 @@
                     <!-- All users will be loaded here -->
                 </div>
             </div>
+
+            <!-- Reviews Management Section -->
+            <div id="reviews-section" class="dashboard-section">
+                <div class="dashboard-header">
+                    <h1>Reseñas de Huéspedes</h1>
+                    <p>Consulta y administra las reseñas enviadas por los usuarios</p>
+                </div>
+                <div id="admin-reviews-grid" class="reservations-grid">
+                    <!-- Reviews will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Messages Section -->
+            <div id="messages-section" class="dashboard-section">
+                <div class="dashboard-header">
+                    <h1>Mensajes de Contacto</h1>
+                    <p>Mensajes enviados desde el formulario de Contacto</p>
+                </div>
+                <div id="admin-messages-grid" class="reservations-grid">
+                    <!-- Messages will be loaded here -->
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Auth Modals -->
-    <div id="login-modal" class="modal">
+    <auth-modals></auth-modals>
+
+    <!-- Admin Modify Reservation Modal -->
+    <div id="admin-modify-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Iniciar Sesión</h2>
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="login-email">Email:</label>
-                    <input type="email" id="login-email" required>
+            <h2><i class="fas fa-edit"></i> Modificar Reserva</h2>
+            <div id="admin-modify-details" style="margin-bottom: 1rem;"></div>
+            <form id="admin-modify-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="admin-modify-check-in">Fecha de Entrada:</label>
+                        <input type="date" id="admin-modify-check-in" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-modify-check-out">Fecha de Salida:</label>
+                        <input type="date" id="admin-modify-check-out" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-modify-guests">Huéspedes:</label>
+                        <select id="admin-modify-guests" required></select>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="login-password">Contraseña:</label>
-                    <input type="password" id="login-password" required>
+                    <label for="admin-modify-notes">Notas (opcional):</label>
+                    <textarea id="admin-modify-notes" rows="3" placeholder="Comentarios especiales, solicitudes, etc."></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                <div id="admin-modify-price-summary" style="background: var(--bg-light); padding: 1rem; border-radius: var(--border-radius); margin: 1rem 0;"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="admin-cancel-modify-btn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
             </form>
-            <p>¿No tienes cuenta? <a href="#" id="show-register">Regístrate aquí</a></p>
         </div>
     </div>
 
-    <div id="register-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Registrarse</h2>
-            <form id="register-form">
-                <div class="form-group">
-                    <label for="register-id">Número de Identificación:</label>
-                    <input type="text" id="register-id" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-name">Nombre Completo:</label>
-                    <input type="text" id="register-name" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-nationality">Nacionalidad:</label>
-                    <input type="text" id="register-nationality" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-email">Email:</label>
-                    <input type="email" id="register-email" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-phone">Teléfono:</label>
-                    <input type="tel" id="register-phone" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-password">Contraseña:</label>
-                    <input type="password" id="register-password" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Registrarse</button>
-            </form>
-            <p>¿Ya tienes cuenta? <a href="#" id="show-login">Inicia sesión aquí</a></p>
-        </div>
-    </div>
-
+    <script src="../js/components.js"></script>
     <script src="../js/app.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/booking.js"></script>

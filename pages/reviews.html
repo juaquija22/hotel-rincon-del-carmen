@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reseñas - Hotel el Rincón del Carmen</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" type="image/png" href="../images/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <site-navbar></site-navbar>
+
+    <section class="hero reviews-hero">
+        <div class="hero-content reviews-hero-content">
+            <h1 class="hero-title">Reseñas de Huéspedes</h1>
+            <p class="hero-subtitle">Lee y comparte tu experiencia en el Hotel el Rincón del Carmen</p>
+        </div>
+        <div class="hero-image">
+            <img src="../images/playa.jpg" alt="Hotel el Rincón del Carmen">
+        </div>
+    </section>
+
+    <section class="reviews-section">
+        <div class="container">
+            <testimonials-carousel></testimonials-carousel>
+            <div class="reviews-form" style="margin-top:2rem;">
+                <h2 class="section-title">Escribe una Reseña</h2>
+                <div id="login-required-reviews" class="notice" style="display:none;">
+                    <i class="fas fa-info-circle"></i>
+                    Debes iniciar sesión para publicar una reseña.
+                </div>
+                <form id="review-form">
+                    <div class="form-group">
+                        <label for="review-rating">Calificación</label>
+                        <div class="rating-input" id="rating-input">
+                            <i data-value="1" class="fa-regular fa-star"></i>
+                            <i data-value="2" class="fa-regular fa-star"></i>
+                            <i data-value="3" class="fa-regular fa-star"></i>
+                            <i data-value="4" class="fa-regular fa-star"></i>
+                            <i data-value="5" class="fa-regular fa-star"></i>
+                        </div>
+                        <input type="hidden" id="review-rating" value="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="review-title">Título</label>
+                        <input type="text" id="review-title" placeholder="Excelente estadía" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="review-text">Tu Reseña</label>
+                        <textarea id="review-text" rows="5" placeholder="Cuéntanos qué te gustó y qué podríamos mejorar" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Publicar Reseña</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <site-footer></site-footer>
+
+    <auth-modals></auth-modals>
+
+    <script src="../js/components.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/reviews.js"></script>
+</body>
+</html>
+
+

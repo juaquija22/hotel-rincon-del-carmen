@@ -541,67 +541,7 @@ class HotelApp {
         return false;
     }
 
-    /**
-     * Modifica una reserva existente con nuevas fechas y datos
-     * @param {number} reservationId - ID de la reserva a modificar
-     * @param {string} newCheckIn - Nueva fecha de entrada
-     * @param {string} newCheckOut - Nueva fecha de salida
-     * @param {number} newGuests - Nuevo número de huéspedes
-     * @param {string} newNotes - Nuevas notas adicionales
-     * @returns {Object|false} - Objeto de reserva actualizada o false si falla
-     */
-    modifyReservation(reservationId, newCheckIn, newCheckOut, newGuests, newNotes = '') {
-        const reservation = this.reservations.find(r => r.id === reservationId);
-        if (!reservation) return false;
-
-        const isAvailable = this.checkRoomAvailabilityForModification(
-            reservation.roomId, newCheckIn, newCheckOut, reservationId
-        );
-        if (!isAvailable) return false;
-
-        const room = this.rooms.find(r => r.id === reservation.roomId);
-        if (!room) return false;
-
-        const nights = Math.ceil((new Date(newCheckOut) - new Date(newCheckIn)) / (1000 * 60 * 60 * 24));
-        const newTotalPrice = this.calculateTotalPrice(room.price, nights);
-
-        reservation.checkIn = newCheckIn;
-        reservation.checkOut = newCheckOut;
-        reservation.guests = newGuests;
-        reservation.notes = newNotes;
-        reservation.totalPrice = newTotalPrice;
-        reservation.modifiedAt = new Date().toISOString();
-
-        this.saveData();
-        return reservation;
-    }
-
-    /**
-     * Verifica disponibilidad al modificar una reserva
-     * Excluye la reserva actual de la verificación para evitar conflictos consigo misma
-     * @param {number} roomId - ID de la habitación
-     * @param {string} checkIn - Fecha de entrada
-     * @param {string} checkOut - Fecha de salida
-     * @param {number} excludeReservationId - ID de la reserva a excluir de la verificación
-     * @returns {boolean} - true si está disponible para modificar
-     */
-    checkRoomAvailabilityForModification(roomId, checkIn, checkOut, excludeReservationId) {
-        const checkInDate = new Date(checkIn);
-        const checkOutDate = new Date(checkOut);
-        
-        return !this.reservations.some(reservation => {
-            if (reservation.roomId !== roomId || 
-                reservation.status === 'cancelled' || 
-                reservation.id === excludeReservationId) {
-                return false;
-            }
-            
-            const resCheckIn = new Date(reservation.checkIn);
-            const resCheckOut = new Date(reservation.checkOut);
-            
-            return (checkInDate < resCheckOut && checkOutDate > resCheckIn);
-        });
-    }
+    // (Métodos de modificación de reservas eliminados por no usarse)
 }
 
 // Inicializa la aplicación cuando el DOM esté completamente cargado

@@ -91,6 +91,8 @@ class AdminPanel {
             case 'reservations': this.loadReservations(); break;
             case 'rooms': this.loadRooms(); break;
             case 'users': this.loadUsers(); break;
+            case 'reviews': this.loadReviews(); break;
+            case 'messages': this.loadMessages(); break;
         }
     }
 
@@ -240,6 +242,9 @@ class AdminPanel {
                         ` : ''}
                     </div>
                     <div class="reservation-actions">
+                        <button class="btn btn-celeste" onclick="window.adminPanel.showModifyReservation(${reservation.id})">
+                            <i class="fas fa-edit"></i> Modificar
+                        </button>
                         ${reservation.status === 'confirmed' ? `
                             <button class="btn btn-warning" onclick="window.adminPanel.cancelReservation(${reservation.id})">
                                 <i class="fas fa-times"></i> Cancelar
@@ -256,6 +261,139 @@ class AdminPanel {
                 </div>
             `;
         }).join('');
+    }
+
+    showModifyReservation(reservationId) {
+        const reservations = JSON.parse(localStorage.getItem('hotel_reservations') || '[]');
+        const reservation = reservations.find(r => r.id === reservationId);
+        const room = window.hotelApp.rooms.find(r => r.id === (reservation ? reservation.roomId : null));
+        if (!reservation || !room) return alert('No se pudo cargar la reserva.');
+
+        this._editingReservationId = reservationId;
+
+        const details = document.getElementById('admin-modify-details');
+        if (details) {
+            details.innerHTML = `
+                <div><strong>Reserva:</strong> #${reservation.id}</div>
+                <div><strong>Habitación:</strong> ${room.name}</div>
+                <div><strong>Cliente:</strong> ${reservation.userName || 'N/A'} (${reservation.userEmail || ''})</div>
+            `;
+        }
+
+        // Populate fields
+        const checkInInput = document.getElementById('admin-modify-check-in');
+        const checkOutInput = document.getElementById('admin-modify-check-out');
+        const guestsSelect = document.getElementById('admin-modify-guests');
+        const notesInput = document.getElementById('admin-modify-notes');
+
+        const today = new Date().toISOString().split('T')[0];
+        if (checkInInput) {
+            checkInInput.min = today;
+            checkInInput.value = reservation.checkIn;
+        }
+        if (checkOutInput) {
+            checkOutInput.min = reservation.checkIn;
+            checkOutInput.value = reservation.checkOut;
+        }
+        if (guestsSelect) {
+            guestsSelect.innerHTML = Array.from({length: room.maxGuests}, (_,i)=>`<option value="${i+1}">${i+1} persona${i? 's':''}</option>`).join('');
+            guestsSelect.value = String(reservation.guests);
+        }
+        if (notesInput) notesInput.value = reservation.notes || '';
+
+        const setMinOut = () => {
+            if (checkInInput && checkOutInput) {
+                checkOutInput.min = checkInInput.value || today;
+                if (checkOutInput.value && checkOutInput.value <= checkInInput.value) {
+                    checkOutInput.value = '';
+                }
+            }
+        };
+        if (checkInInput) checkInInput.addEventListener('change', setMinOut, { once: true });
+
+        const priceSummary = document.getElementById('admin-modify-price-summary');
+        const updatePrice = () => {
+            if (!checkInInput || !checkOutInput) return;
+            const nights = window.hotelApp.calculateNights(checkInInput.value, checkOutInput.value);
+            const total = window.hotelApp.calculateTotalPrice(room.price, nights);
+            if (priceSummary) {
+                priceSummary.innerHTML = nights > 0 ? `
+                    <strong>Total:</strong> $${total.toLocaleString()}<br>
+                    <small>$${room.price.toLocaleString()} × ${nights} noche${nights>1?'s':''}</small>
+                ` : '<small>Selecciona fechas válidas.</small>';
+            }
+        };
+        if (checkInInput) checkInInput.addEventListener('change', updatePrice);
+        if (checkOutInput) checkOutInput.addEventListener('change', updatePrice);
+        updatePrice();
+
+        // Show modal
+        const modal = document.getElementById('admin-modify-modal');
+        if (modal) modal.style.display = 'block';
+
+        const closeEls = modal ? modal.querySelectorAll('.close, #admin-cancel-modify-btn') : [];
+        closeEls.forEach(el => el.addEventListener('click', () => {
+            if (modal) modal.style.display = 'none';
+        }, { once: true }));
+
+        const form = document.getElementById('admin-modify-form');
+        if (form) {
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                this.submitModifyReservation();
+            };
+        }
+    }
+
+    submitModifyReservation() {
+        const reservationId = this._editingReservationId;
+        if (!reservationId) return;
+
+        const reservations = JSON.parse(localStorage.getItem('hotel_reservations') || '[]');
+        const reservation = reservations.find(r => r.id === reservationId);
+        const room = window.hotelApp.rooms.find(r => r.id === (reservation ? reservation.roomId : null));
+        if (!reservation || !room) return alert('No se pudo modificar la reserva.');
+
+        const checkIn = document.getElementById('admin-modify-check-in').value;
+        const checkOut = document.getElementById('admin-modify-check-out').value;
+        const guests = parseInt(document.getElementById('admin-modify-guests').value, 10);
+        const notes = document.getElementById('admin-modify-notes').value.trim();
+
+        const checkInDate = new Date(checkIn);
+        const checkOutDate = new Date(checkOut);
+        const today = new Date(); today.setHours(0,0,0,0);
+        if (isNaN(checkInDate) || isNaN(checkOutDate) || checkInDate < today || checkOutDate <= checkInDate) {
+            return alert('Por favor ingresa fechas válidas.');
+        }
+        if (guests < 1 || guests > room.maxGuests) {
+            return alert('Número de huéspedes inválido para esta habitación.');
+        }
+
+        // Availability excluding current reservation
+        const isBusy = reservations.some(r => {
+            if (r.id === reservation.id || r.roomId !== room.id || r.status === 'cancelled') return false;
+            const resIn = new Date(r.checkIn);
+            const resOut = new Date(r.checkOut);
+            return (checkInDate < resOut && checkOutDate > resIn);
+        });
+        if (isBusy) return alert('La habitación no está disponible en esas fechas.');
+
+        const nights = window.hotelApp.calculateNights(checkIn, checkOut);
+        reservation.checkIn = checkIn;
+        reservation.checkOut = checkOut;
+        reservation.guests = guests;
+        reservation.notes = notes;
+        reservation.totalPrice = window.hotelApp.calculateTotalPrice(room.price, nights);
+        reservation.modifiedAt = new Date().toISOString();
+
+        localStorage.setItem('hotel_reservations', JSON.stringify(reservations));
+        alert('Reserva modificada exitosamente');
+
+        const modal = document.getElementById('admin-modify-modal');
+        if (modal) modal.style.display = 'none';
+
+        this.loadReservations();
+        this.loadOverview();
     }
 
     /**
@@ -429,6 +567,50 @@ class AdminPanel {
     }
 
     /**
+     * Carga y muestra todas las reseñas de usuarios almacenadas en localStorage
+     */
+    loadReviews() {
+        const reviews = JSON.parse(localStorage.getItem('hotel_reviews') || '[]');
+        const container = document.getElementById('admin-reviews-grid');
+
+        if (!reviews || reviews.length === 0) {
+            container.innerHTML = `
+                <div class="no-data">
+                    <i class="fas fa-comments"></i>
+                    <h3>No hay reseñas</h3>
+                    <p>Aún no se han publicado reseñas</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = reviews
+            .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .map(r => `
+                <div class="admin-reservation-card">
+                    <div class="reservation-header">
+                        <h3>${(r.userName || 'Huésped')}</h3>
+                        <span class="status-badge status-confirmed">${(r.rating || 0)} ⭐</span>
+                    </div>
+                    <div class="reservation-details">
+                        <div class="detail-row"><span class="label">Título:</span><span class="value">${this.escape(r.title)}</span></div>
+                        <div class="detail-row"><span class="label">Reseña:</span><span class="value">${this.escape(r.text)}</span></div>
+                        <div class="detail-row"><span class="label">Fecha:</span><span class="value">${new Date(r.createdAt).toLocaleDateString('es-ES', {year:'numeric', month:'long', day:'numeric'})}</span></div>
+                    </div>
+                </div>
+            `).join('');
+    }
+
+    escape(text='') {
+        return String(text)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    /**
      * Elimina permanentemente un usuario del sistema
      * @param {number} userId - ID del usuario a eliminar
      * Esta acción NO se puede deshacer
@@ -442,6 +624,42 @@ class AdminPanel {
             this.loadUsers();
             this.loadOverview();
         }
+    }
+
+    /**
+     * Carga y muestra mensajes de contacto guardados en localStorage
+     */
+    loadMessages() {
+        const messages = JSON.parse(localStorage.getItem('hotel_messages') || '[]');
+        const container = document.getElementById('admin-messages-grid');
+
+        if (!messages || messages.length === 0) {
+            container.innerHTML = `
+                <div class="no-data">
+                    <i class="fas fa-inbox"></i>
+                    <h3>No hay mensajes</h3>
+                    <p>Cuando los usuarios envíen el formulario de contacto aparecerán aquí</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = messages
+            .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .map(m => `
+                <div class="admin-reservation-card">
+                    <div class="reservation-header">
+                        <h3>${(m.userName || 'Visitante')}</h3>
+                        <span class="status-badge status-pending">${this.escape(m.subject)}</span>
+                    </div>
+                    <div class="reservation-details">
+                        <div class="detail-row"><span class="label">Email:</span><span class="value">${this.escape(m.email)}</span></div>
+                        ${m.phone ? `<div class="detail-row"><span class="label">Teléfono:</span><span class="value">${this.escape(m.phone)}</span></div>` : ''}
+                        <div class="detail-row"><span class="label">Mensaje:</span><span class="value">${this.escape(m.message)}</span></div>
+                        <div class="detail-row"><span class="label">Fecha:</span><span class="value">${new Date(m.createdAt).toLocaleDateString('es-ES', {year:'numeric', month:'long', day:'numeric'})}</span></div>
+                    </div>
+                </div>
+            `).join('');
     }
 }
 
