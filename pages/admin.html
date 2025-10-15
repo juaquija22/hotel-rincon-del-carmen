@@ -196,21 +196,21 @@
             <form id="admin-checkin-form">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="admin-checkin-time">Hora de Check-in</label>
-                        <input type="time" id="admin-checkin-time" required>
+                        <label for="checkin-document">Documento del Huésped (ID):</label>
+                        <input type="text" id="checkin-document" required>
                     </div>
                     <div class="form-group">
-                        <label for="admin-checkin-doc">Documento verificado (ID / Pasaporte)</label>
-                        <input type="text" id="admin-checkin-doc" placeholder="Número de documento" required>
+                        <label for="checkin-time">Hora de Check-in:</label>
+                        <input type="time" id="checkin-time" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="admin-checkin-notes">Notas (opcional)</label>
-                    <textarea id="admin-checkin-notes" rows="3" placeholder="Observaciones del ingreso, acompañantes, etc."></textarea>
+                    <label for="checkin-notes">Notas (opcional):</label>
+                    <input type="text" id="checkin-notes" placeholder="Comentarios del check-in">
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="admin-cancel-checkin-btn">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Confirmar Check-in</button>
+                    <button type="submit" class="btn btn-success">Confirmar Check-in</button>
                 </div>
             </form>
         </div>

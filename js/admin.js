@@ -198,9 +198,11 @@ class AdminPanel {
         container.innerHTML = reservations.map(reservation => {
             const room = rooms.find(r => r.id === reservation.roomId);
             const user = users.find(u => u.id === reservation.userId);
-            const statusClass = reservation.status === 'confirmed' ? 'status-confirmed' : 
+            const statusClass = reservation.status === 'checked_in' ? 'status-checked-in' :
+                               reservation.status === 'confirmed' ? 'status-confirmed' : 
                                reservation.status === 'cancelled' ? 'status-cancelled' : 'status-pending';
-            const statusText = reservation.status === 'confirmed' ? 'Confirmada' : 
+            const statusText = reservation.status === 'checked_in' ? 'Check-in' :
+                              reservation.status === 'confirmed' ? 'Confirmada' : 
                               reservation.status === 'cancelled' ? 'Cancelada' : 'Pendiente';
 
             return `
@@ -240,34 +242,24 @@ class AdminPanel {
                                 <span class="value">${reservation.notes}</span>
                             </div>
                         ` : ''}
-                        ${reservation.checkedInAt ? `
-                            <div class="detail-row">
-                                <span class="label">Check-in:</span>
-                                <span class="value">${new Date(reservation.checkedInAt).toLocaleString('es-ES')}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="label">Atendido por:</span>
-                                <span class="value">${this.currentUser?.name || 'Administrador'}</span>
-                            </div>
-                        ` : ''}
                     </div>
                     <div class="reservation-actions">
                         <button class="btn btn-celeste" onclick="window.adminPanel.showModifyReservation(${reservation.id})">
                             <i class="fas fa-edit"></i> Modificar
                         </button>
-                        ${reservation.status === 'confirmed' && !reservation.checkedInAt ? `
-                            <button class="btn btn-success" onclick="window.adminPanel.showCheckIn(${reservation.id})">
-                                <i class="fas fa-door-open"></i> Hacer Check-in
-                            </button>
-                        ` : ''}
                         ${reservation.status === 'confirmed' ? `
                             <button class="btn btn-warning" onclick="window.adminPanel.cancelReservation(${reservation.id})">
                                 <i class="fas fa-times"></i> Cancelar
+                            </button>
+                            <button class="btn btn-success" onclick="window.adminPanel.showCheckin(${reservation.id})">
+                                <i class="fas fa-door-open"></i> Check-in
                             </button>
                         ` : reservation.status === 'cancelled' ? `
                             <button class="btn btn-success" onclick="window.adminPanel.reactivateReservation(${reservation.id})">
                                 <i class="fas fa-check"></i> Reactivar
                             </button>
+                        ` : reservation.status === 'checked_in' ? `
+                            <span class="admin-notice">Huésped registrado el ${reservation.checkedInAt ? new Date(reservation.checkedInAt).toLocaleString('es-ES') : ''}</span>
                         ` : ''}
                         <button class="btn btn-danger" onclick="window.adminPanel.deleteReservation(${reservation.id})">
                             <i class="fas fa-trash"></i> Eliminar
@@ -278,28 +270,31 @@ class AdminPanel {
         }).join('');
     }
 
-    showCheckIn(reservationId) {
+    showCheckin(reservationId) {
         const reservations = JSON.parse(localStorage.getItem('hotel_reservations') || '[]');
         const reservation = reservations.find(r => r.id === reservationId);
         const room = window.hotelApp.rooms.find(r => r.id === (reservation ? reservation.roomId : null));
+        const user = JSON.parse(localStorage.getItem('hotel_users') || '[]').find(u => u.id === (reservation ? reservation.userId : null));
         if (!reservation || !room) return alert('No se pudo cargar la reserva.');
 
         this._checkinReservationId = reservationId;
-
         const details = document.getElementById('admin-checkin-details');
         if (details) {
             details.innerHTML = `
                 <div><strong>Reserva:</strong> #${reservation.id}</div>
                 <div><strong>Habitación:</strong> ${room.name}</div>
-                <div><strong>Huésped:</strong> ${reservation.userName || 'N/A'}</div>
+                <div><strong>Cliente:</strong> ${user?.name || reservation.userName || 'N/A'} (${user?.email || reservation.userEmail || ''})</div>
                 <div><strong>Fechas:</strong> ${new Date(reservation.checkIn).toLocaleDateString('es-ES')} - ${new Date(reservation.checkOut).toLocaleDateString('es-ES')}</div>
             `;
         }
 
-        const timeInput = document.getElementById('admin-checkin-time');
+        // Prefill time around now and policy 14:00 if earlier
+        const timeInput = document.getElementById('checkin-time');
         if (timeInput) {
-            // Pre-cargar 14:00 por defecto
-            timeInput.value = '14:00';
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            timeInput.value = `${hh}:${mm}`;
         }
 
         const modal = document.getElementById('admin-checkin-modal');
@@ -314,47 +309,37 @@ class AdminPanel {
         if (form) {
             form.onsubmit = (e) => {
                 e.preventDefault();
-                this.submitCheckIn();
+                this.submitCheckin();
             };
         }
     }
 
-    submitCheckIn() {
+    submitCheckin() {
         const reservationId = this._checkinReservationId;
         if (!reservationId) return;
-
-        const time = document.getElementById('admin-checkin-time').value;
-        const doc = document.getElementById('admin-checkin-doc').value.trim();
-        const notes = document.getElementById('admin-checkin-notes').value.trim();
-        if (!time || !doc) {
-            return alert('Por favor completa la hora de check-in y el documento verificado.');
-        }
-
         const reservations = JSON.parse(localStorage.getItem('hotel_reservations') || '[]');
         const reservation = reservations.find(r => r.id === reservationId);
-        if (!reservation) return alert('No se encontró la reserva.');
+        if (!reservation) return alert('No se pudo registrar el check-in.');
 
-        // Componer fecha-hora del check-in con la fecha de entrada
-        try {
-            const checkInDate = new Date(reservation.checkIn);
-            const [hh, mm] = time.split(':').map(n => parseInt(n, 10));
-            checkInDate.setHours(hh, mm || 0, 0, 0);
-            reservation.checkedInAt = checkInDate.toISOString();
-        } catch (_) {
-            reservation.checkedInAt = new Date().toISOString();
+        const documentId = document.getElementById('checkin-document').value.trim();
+        const checkinTime = document.getElementById('checkin-time').value.trim();
+        const checkinNotes = document.getElementById('checkin-notes').value.trim();
+        if (!documentId || !checkinTime) {
+            return alert('Documento y hora de check-in son obligatorios.');
         }
-        reservation.checkedInBy = this.currentUser?.id;
-        if (notes) {
-            reservation.checkinNotes = notes;
-        }
-        reservation.checkinDoc = doc;
+
+        // Persist check-in
+        reservation.status = 'checked_in';
+        const checkinDateTime = new Date(`${reservation.checkIn}T${checkinTime}:00`);
+        reservation.checkedInAt = isNaN(checkinDateTime) ? new Date().toISOString() : checkinDateTime.toISOString();
+        reservation.checkinDocument = documentId;
+        if (checkinNotes) reservation.checkinNotes = checkinNotes;
 
         localStorage.setItem('hotel_reservations', JSON.stringify(reservations));
-        alert('Check-in registrado exitosamente');
 
+        alert('Check-in registrado exitosamente');
         const modal = document.getElementById('admin-checkin-modal');
         if (modal) modal.style.display = 'none';
-
         this.loadReservations();
         this.loadOverview();
     }
